@@ -10,7 +10,13 @@ import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 
+
+import com.weibo.stormUI.model.BlotData;
 import com.weibo.stormUI.model.ClusterData;
+import com.weibo.stormUI.model.SpoutData;
+import com.weibo.stormUI.model.SupervisorData;
+import com.weibo.stormUI.model.TopologyData;
+
 
 public class InfluxDBUtil<T> {
 	
@@ -32,39 +38,102 @@ public class InfluxDBUtil<T> {
 				}
 			}
 		}
-		System.out.println("IP : " + IP);
-		System.out.println("PORT : " + PORT);
-		System.out.println("url : " + "http://" + IP + ":" + PORT);
 		return INFLUXDB;
 	}
 
 	public boolean createDB(String dbName) {
-		if(DBNAME == null){
+
+		if(DBNAME == null && dbName != null){
 			synchronized(this){
 				if(DBNAME == null){
+					List<String> dbs = INFLUXDB.describeDatabases();
+					for(String tmp : dbs){
+						if(tmp != null && tmp.equals(dbName)){
+							DBNAME = dbName;
+							INFLUXDB.enableBatch(20000000, 600, TimeUnit.MILLISECONDS);
+							System.out.println("数据库已经存在！");
+							return true;
+						}
+					}
 					INFLUXDB.createDatabase(dbName);
 					DBNAME = dbName;
 					INFLUXDB.enableBatch(20000000, 600, TimeUnit.MILLISECONDS);
 				}
 			}
 		}
-		System.out.println("DBNAME : " + DBNAME);
+
 		return true;
 	}
 
 	//插入一条数据
 	public boolean insertData(T object) {
 		Point point = null;
-		if(object.getClass().equals(ClusterData.class)){
-			ClusterData tmp = (ClusterData)object;
-			point = Point.measurement("cluster").field("stormVersion", tmp.getStormVersion())
-					.field("nimbusUptime", tmp.getNimbusUptime()).field("supervisors", tmp.getSupervisors())
-					.field("slotsTotal", tmp.getSlotsTotal()).field("slotsUsed", tmp.getSlotsUsed())
-					.field("slotsFree", tmp.getSlotsFree()).field("executorsTotal", tmp.getExecutorsTotal())
-					.field("tasksTotal", tmp.getTasksTotal()).tag("module", "cluster").build();
+		if(object != null){
+			//如果保存的是ClusterData数据
+			if(object.getClass().equals(ClusterData.class)){
+				ClusterData tmp = (ClusterData)object;
+				point = Point.measurement("cluster")
+						.field("nimbusUptime", tmp.getNimbusUptime()).field("supervisors", tmp.getSupervisors())
+						.field("slotsTotal", tmp.getSlotsTotal()).field("slotsUsed", tmp.getSlotsUsed())
+						.field("slotsFree", tmp.getSlotsFree()).field("executorsTotal", tmp.getExecutorsTotal())
+						.field("tasksTotal", tmp.getTasksTotal())
+						.tag("stormVersion",tmp.getStormVersion())
+						.build();
+			}
+			//如果保存的是BlotData数据
+			if(object.getClass().equals(BlotData.class)){
+				BlotData tmp = (BlotData)object;
+				point = Point.measurement("blot")
+						.field("executors", tmp.getExecutors()).field("tasks", tmp.getTasks())
+						.field("emitted", tmp.getEmitted()).field("transferred", tmp.getTransferred())
+						.field("capacity", tmp.getCapacity()).field("executeLatency", tmp.getExecuteLatency())
+						.field("executed", tmp.getExecuted()).field("processLatency", tmp.getProcessLatency())
+						.field("acked", tmp.getAcked()).field("failed", tmp.getFailed())
+//						.tag("errorHost", tmp.getErrorHost())
+//						.tag("errorPort", tmp.getErrorPort())
+						.tag("boltId", tmp.getBoltId())
+						.build();
+			}
+			
+			//如果保存的是SpoutData数据
+			if(object.getClass().equals(SpoutData.class)){
+				SpoutData tmp = (SpoutData)object;
+				point = Point.measurement("spout").field("executors", tmp.getExecutors())
+						.field("emitted", tmp.getEmitted()).field("errorLapsedSecs", tmp.getErrorLapsedSecs())
+						.field("completeLatency", tmp.getCompleteLatency()).field("transferred", tmp.getTransferred())
+						.field("acked", tmp.getAcked())	
+						.field("tasks", tmp.getTasks())
+//						.tag("errorHost", tmp.getErrorHost())
+//						.tag("lastError", tmp.getLastError())
+//						.tag("errorWorkerLogLink", tmp.getErrorWorkerLogLink())
+//						.tag("failed", tmp.getFailed())
+						.tag("spoutId", tmp.getSpoutId())
+						.build();
+				System.out.println("spoutId = " + tmp.getSpoutId());
+			}
+			
+			//如果保存的是SupervisorData数据
+			if(object.getClass().equals(SupervisorData.class)){
+				SupervisorData tmp = (SupervisorData)object;
+				point = Point.measurement("supervisor").field("uptime", tmp.getUptime())
+						.field("slotsTotal", tmp.getSlotsTotal()).field("slotsUsed", tmp.getSlotsUsed())
+						.tag("supervisorId", tmp.getSupervisorId()).tag("host", tmp.getHost())
+						.build();
+			}
+			//如果保存的是TopologyData
+			if(object.getClass().equals(TopologyData.class)){
+				TopologyData tmp = (TopologyData)object;
+				point = Point.measurement("topology").field("uptime", tmp.getUptime())
+						.field("tasksTotal", tmp.getTasksTotal()).field("workersTotal", tmp.getWorkersTotal())
+						.field("executorsTotal", tmp.getExecutorsTotal())
+						.tag("topologyId", tmp.getTopologyId()).tag("topolotyName",tmp.getTopolotyName())
+						.tag("status", tmp.getStatus()).tag("encodedId", tmp.getEncodedId())
+						.build();
+			}
+			INFLUXDB.write(DBNAME, "default", point);
+			return true;
 		}
-		INFLUXDB.write(DBNAME, "default", point);
-		return true;
+		return false;
 	}
 	
 	//插入多条记录
