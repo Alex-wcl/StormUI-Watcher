@@ -1,0 +1,61 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>StormUI</display-name>
+  
+  <!--  classpath为resources根目录路径 -->
+   <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:springConfig.xml
+        </param-value>
+    </context-param>
+    
+     <listener>
+	    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	  </listener> 
+	  
+	  <!-- web容器启动之后，开启一个线程读取storm集群中的信息 -->
+	   <listener>  
+        <listener-class>com.weibo.stormUI.listener.DataLoadListener</listener-class>  
+    </listener>
+    <servlet>
+        <servlet-name>TopologyServlet</servlet-name>
+        <servlet-class>com.weibo.stormUI.servlet.TopologyServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+   <servlet>
+        <servlet-name>ClusterServlet</servlet-name>
+        <servlet-class>com.weibo.stormUI.servlet.ClusterServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>SupervisorServlet</servlet-name>
+        <servlet-class>com.weibo.stormUI.servlet.SupervisorServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet> 
+     
+
+	<!-- 拦截前端指定URL -->
+	<!-- 
+		前端URL格式：http://IP:port/模块名/方法名？模块Id=id&方法参数名1=值1&方法参数名2=值2... 
+		 	模块名：topology，cluster， supervisor
+		 	方法名：service层类中的方法名，例如要访问ClusterService.java中的usedSlots()方法，则方法名为usedSlots 
+		 	参数部分：
+		 		模块Id：要查询的模块（topology，cluster， supervisor）的ID值，如果为cluster则不需要填，因为cluster只有一个
+	 	-->
+   <servlet-mapping>
+        <servlet-name>TopologyServlet</servlet-name>
+       <url-pattern>/topology/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClusterServlet</servlet-name>
+       <url-pattern>/cluster/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SupervisorServlet</servlet-name>
+       <url-pattern>/supervisor/*</url-pattern>
+    </servlet-mapping> 
+</web-app>
