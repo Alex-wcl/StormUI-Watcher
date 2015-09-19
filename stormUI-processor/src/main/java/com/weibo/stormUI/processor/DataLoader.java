@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import com.weibo.stormUI.model.BlotData;
 import com.weibo.stormUI.model.ClusterData;
 import com.weibo.stormUI.model.SpoutData;
-
 import com.weibo.stormUI.model.SupervisorData;
 import com.weibo.stormUI.model.TopologyData;
 import com.weibo.stormUI.util.InfluxDBUtil;
