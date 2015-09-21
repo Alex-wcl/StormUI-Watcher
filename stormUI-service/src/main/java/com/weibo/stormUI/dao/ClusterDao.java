@@ -8,8 +8,6 @@ import com.weibo.stormUI.util.GlobalVariable;
 @Component
 public class ClusterDao {
 	
-	@Autowired
-	private ClusterDao clusterDao;
 	
 	public int usedSlots(String string){
 		System.out.println("执行ClusterService.usedSlots（）方法！");
