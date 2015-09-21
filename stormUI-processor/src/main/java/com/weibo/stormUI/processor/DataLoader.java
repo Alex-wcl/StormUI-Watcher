@@ -28,9 +28,10 @@ public class DataLoader implements Runnable{
 	//influxdb提供的端口号，默认为8086
 	private static int INFLUXDB_SERVER_PORT = 8086;
 	//cluster集群的ip地址
-	private static String CLUSTER_SERVER_IP = "10.77.108.127";
+	//一开始监控该IP：10.77.108.127，port：8090
+	private static String CLUSTER_SERVER_IP = "10.77.128.101";
 	//cluster集群端口号
-	private static int CLUSTER_SERVER_PORT = 8090;
+	private static int CLUSTER_SERVER_PORT = 8080;
 	//线程休眠时间（毫秒）
 	private static long SLEEPTIME = 10000;
 	//influxdb的用户名和密码，默认为root，root
@@ -70,13 +71,13 @@ public class DataLoader implements Runnable{
 				//获取topology summary数据并保存
 				topologyDatas = loadTopologySummary(CLUSTER_SERVER_IP,CLUSTER_SERVER_PORT);
 				topologyInfluxDB.insertDatas(topologyDatas);
-				
-				//获取Supervisor summary数据并保存
+//				
+//				//获取Supervisor summary数据并保存
 				supervisorDatas = loadSupervisorSummary(CLUSTER_SERVER_IP,CLUSTER_SERVER_PORT);
 				supervisorInfluxDB.insertDatas(supervisorDatas);
-				
-				//获取bolts和spout数据并保存
-				//因为可能会有很多topology，所以需要查询多次
+//				
+//				//获取bolts和spout数据并保存
+//				//因为可能会有很多topology，所以需要查询多次
 				int topologySize = topologyDatas.size();
 				for(int i = 0;i < topologySize;i++){
 					map = loadTopologyInfo(CLUSTER_SERVER_IP,CLUSTER_SERVER_PORT,topologyDatas.get(i).getTopologyId());
@@ -186,7 +187,7 @@ public class DataLoader implements Runnable{
 		 String result = URLConnectionHelper(urlString);
 		 //解析spout数据
 		 //substringOfSpouts:Spout部分的数据。查找[]中间的部分
-		 String substringOfSpouts = result.substring(result.indexOf("spouts") + 9, result.indexOf("]", result.indexOf("spouts") ));
+		 String substringOfSpouts = result.substring(result.indexOf("\"spouts\"") + 9, result.indexOf("]", result.indexOf("spouts") ));
 		//查询有多少条数据
 		 int countOFLeftBrace = getSubtringCount(substringOfSpouts,"{");
 		 List<SpoutData> spoutDatas = new ArrayList<SpoutData>();
@@ -212,7 +213,7 @@ public class DataLoader implements Runnable{
 		 }
 		 //解析bolts数据
 		 //substringOfBlots部分的数据。查找[]中间的部分
-		 String substringOfBlots = result.substring(result.indexOf("bolts") + 8, result.indexOf("]", result.indexOf("bolts") ));
+		 String substringOfBlots = result.substring(result.indexOf("\"bolts\"") + 9, result.indexOf("}]", result.indexOf("bolts"))+2);
 		//查询数据条数
 		 countOFLeftBrace = getSubtringCount(substringOfBlots,"{");
 		 List<BlotData> blotDatas = new ArrayList<BlotData>();
