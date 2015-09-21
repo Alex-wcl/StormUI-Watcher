@@ -11,7 +11,7 @@ import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 
 
-import com.weibo.stormUI.model.BlotData;
+import com.weibo.stormUI.model.BoltData;
 import com.weibo.stormUI.model.ClusterData;
 import com.weibo.stormUI.model.SpoutData;
 import com.weibo.stormUI.model.SupervisorData;
@@ -33,7 +33,7 @@ public class InfluxDBUtil<T> {
 					IP = ip;
 					PORT = port;
 					INFLUXDB = InfluxDBFactory.connect("http://" + IP + ":" + PORT, userNameOFInfluxDB, passwd);
-					INFLUXDB.setLogLevel(LogLevel.FULL);
+					INFLUXDB.setLogLevel(LogLevel.NONE);
 					
 				}
 			}
@@ -81,16 +81,15 @@ public class InfluxDBUtil<T> {
 						.build();
 			}
 			//如果保存的是BlotData数据
-			if(object.getClass().equals(BlotData.class)){
-				BlotData tmp = (BlotData)object;
-				point = Point.measurement("blot")
+			if(object.getClass().equals(BoltData.class)){
+				BoltData tmp = (BoltData)object;
+				point = Point.measurement("bolt")
 						.field("executors", tmp.getExecutors()).field("tasks", tmp.getTasks())
 						.field("emitted", tmp.getEmitted()).field("transferred", tmp.getTransferred())
 						.field("capacity", tmp.getCapacity()).field("executeLatency", tmp.getExecuteLatency())
 						.field("executed", tmp.getExecuted()).field("processLatency", tmp.getProcessLatency())
 						.field("acked", tmp.getAcked()).field("failed", tmp.getFailed())
-//						.tag("errorHost", tmp.getErrorHost())
-//						.tag("errorPort", tmp.getErrorPort())
+						.tag("topologyId", tmp.getTopologyId())
 						.tag("boltId", tmp.getBoltId())
 						.build();
 			}
@@ -99,17 +98,13 @@ public class InfluxDBUtil<T> {
 			if(object.getClass().equals(SpoutData.class)){
 				SpoutData tmp = (SpoutData)object;
 				point = Point.measurement("spout").field("executors", tmp.getExecutors())
-						.field("emitted", tmp.getEmitted()).field("errorLapsedSecs", tmp.getErrorLapsedSecs())
+						.field("emitted", tmp.getEmitted())
 						.field("completeLatency", tmp.getCompleteLatency()).field("transferred", tmp.getTransferred())
 						.field("acked", tmp.getAcked())	
 						.field("tasks", tmp.getTasks())
-//						.tag("errorHost", tmp.getErrorHost())
-//						.tag("lastError", tmp.getLastError())
-//						.tag("errorWorkerLogLink", tmp.getErrorWorkerLogLink())
-//						.tag("failed", tmp.getFailed())
+						.tag("topologyId", tmp.getTopologyId())
 						.tag("spoutId", tmp.getSpoutId())
 						.build();
-				System.out.println("spoutId = " + tmp.getSpoutId());
 			}
 			
 			//如果保存的是SupervisorData数据

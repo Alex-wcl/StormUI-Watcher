@@ -3,29 +3,39 @@ package com.weibo.stormUI.model;
 public class SpoutData {
 	private String executors;
 	private String emitted;
-	private String errorLapsedSecs;
 	private String completeLatency;
 	private String transferred;
 	private String acked;
 	private String errorPort;
 	private String spoutId;
 	private String tasks;
-	private String errorHost;
-	private String lastError;
-	private String errorWorkerLogLink;
-	private String failed;
+	private String topologyId;
 	
 	@Override
 	public String toString() {
 		return "executors = " + executors + ",emitted = " + emitted
-				+ ",errorLapsedSecs = " + errorLapsedSecs + ",completeLatency = " + completeLatency
+				+ ",completeLatency = " + completeLatency
 				+ ",transferred = " + transferred
 				+ ",acked = " + acked + ",errorPort = " + errorPort
 				+ ",spoutId = " + spoutId
-				+ ",tasks = " + tasks + ",errorHost = " + errorHost
-				+ ",lastError = " + lastError
-				+ ",errorWorkerLogLink = " + errorWorkerLogLink + ",failed = " + failed;
+				+ ",tasks = " + tasks 
+				+ ",errorWorkerLogLink = " 
+				+ ",topologyId = " + topologyId;
 	}
+
+	
+	
+	public String getTopologyId() {
+		return topologyId;
+	}
+
+
+
+	public void setTopologyId(String topologyId) {
+		this.topologyId = topologyId;
+	}
+
+
 
 	public String getExecutors() {
 		return executors;
@@ -43,13 +53,7 @@ public class SpoutData {
 		this.emitted = emitted;
 	}
 
-	public String getErrorLapsedSecs() {
-		return errorLapsedSecs;
-	}
-
-	public void setErrorLapsedSecs(String errorLapsedSecs) {
-		this.errorLapsedSecs = errorLapsedSecs;
-	}
+	
 
 	public String getCompleteLatency() {
 		return completeLatency;
@@ -99,37 +103,4 @@ public class SpoutData {
 		this.tasks = tasks;
 	}
 
-	public String getErrorHost() {
-		return errorHost;
-	}
-
-	public void setErrorHost(String errorHost) {
-		this.errorHost = errorHost;
-	}
-
-	public String getLastError() {
-		return lastError;
-	}
-
-	public void setLastError(String lastError) {
-		this.lastError = lastError;
-	}
-
-	public String getErrorWorkerLogLink() {
-		return errorWorkerLogLink;
-	}
-
-	public void setErrorWorkerLogLink(String errorWorkerLogLink) {
-		this.errorWorkerLogLink = errorWorkerLogLink;
-	}
-
-	public String getFailed() {
-		return failed;
-	}
-
-	public void setFailed(String failed) {
-		this.failed = failed;
-	}
-
-	
 }
