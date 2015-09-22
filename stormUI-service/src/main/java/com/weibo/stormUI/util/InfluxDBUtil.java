@@ -23,10 +23,10 @@ public class InfluxDBUtil<T> {
 	private static InfluxDB INFLUXDB;
 	private static String DBNAME;
 	private static String IP;
-	private static int PORT;
+	private static String PORT;
 	
 	
-	public InfluxDB setUp(String ip, int port, String userNameOFInfluxDB, String passwd) {
+	public InfluxDB setUp(String ip, String port, String userNameOFInfluxDB, String passwd) {
 		if(INFLUXDB == null){
 			synchronized (this) {
 				if(INFLUXDB == null){

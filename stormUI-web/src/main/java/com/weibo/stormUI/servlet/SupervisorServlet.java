@@ -26,7 +26,7 @@ public class SupervisorServlet extends HttpServlet{
 			clientName="我的朋友";
 		}
 		request.setAttribute("clientName", clientName + " ，你好");
-		request.getRequestDispatcher("/somePage.jsp").forward(request, response); 
+		request.getRequestDispatcher("/result.jsp").forward(request, response); 
 	}
 	
 }

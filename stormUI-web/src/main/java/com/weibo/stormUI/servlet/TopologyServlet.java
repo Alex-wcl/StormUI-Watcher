@@ -20,10 +20,10 @@ public class TopologyServlet extends HttpServlet{
 		if(clientName!=null)
 			clientName=new String(clientName.getBytes("ISO-8859-1"),"GB2312");
 		else{
-			clientName="ÎÒµÄÅóÓÑ";
+			clientName="æˆ‘çš„æœ‹å‹";
 		}
-		request.setAttribute("clientName", clientName + " ,ÄúºÃ£¡");
-		request.getRequestDispatcher("/somePage.jsp").forward(request, response); 
+		request.setAttribute("clientName", clientName + " ,ä½ å¥½");
+		request.getRequestDispatcher("/result.jsp").forward(request, response); 
 	}
 	
 }
