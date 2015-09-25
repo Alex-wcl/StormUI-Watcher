@@ -1,47 +1,48 @@
 package com.weibo.stormUI.dataLoader.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Stopwatch;
 import com.weibo.stormUI.dataLoader.DataLoader;
+import com.weibo.stormUI.dataLoader.module.ModuleDataLoader;
 import com.weibo.stormUI.model.BoltData;
 import com.weibo.stormUI.model.ClusterData;
 import com.weibo.stormUI.model.SpoutData;
 import com.weibo.stormUI.model.SupervisorData;
 import com.weibo.stormUI.model.TopologyData;
+import com.weibo.stormUI.util.GlobalVariable;
+import com.weibo.stormUI.util.StringHelper;
+import com.weibo.stormUI.util.URLConnectionHelper;
 
 import net.sf.json.JSONObject;
 
 @Component
-public class DataLoaderStorm extends DataLoader {
-
+public class DataLoaderStorm<T> implements DataLoader<T>{
+	private static final Logger log = LogManager.getLogger(DataLoaderStorm.class);
 	private ClusterData clusterData;
 	private List<TopologyData> topologyDatas;
 	private List<SupervisorData> supervisorDatas;
-	private Map<String, Object> map;
+	private T datas;
 	private List<BoltData> blotDatas;
 	private List<SpoutData> spoutDatas;
+	private String SERVER_IP;
+	private String SERVER_PORT;
+	private ModuleDataLoader moduleDataLoader;
 	
-	public DataLoaderStorm(){
-		super("10.77.128.101", "8080");
-		map = new HashMap<String, Object>();
-	}
 	public DataLoaderStorm(String serverIP, String serverPORT) {
-		super(serverIP, serverPORT);
-		map = new HashMap<String, Object>();
+		this.SERVER_IP = serverIP;
+		this.SERVER_PORT = serverPORT;
 	}
-
+	
 	/**
 	 * map中的结构：
 	 * 		key   				value				value type
@@ -56,40 +57,93 @@ public class DataLoaderStorm extends DataLoader {
 	 * 	spoutDatas 			spoutDatas			List<SpoutData>
 	 * 	blotDatas			blotDatas			List<BoltData>
 	 */
-	public Map<String, Object> nextData() {
+	public T nextData() {
 		// 从storm中load数据
 		try {
 			// 获取cluster数据
 			clusterData = loadClusterSummary(SERVER_IP, SERVER_PORT);
-			map.put("clusterData", clusterData);
+			synchronized (datas) {
+				datas.put("clusterData", clusterData);
+			}
 			// 获取topology summary数据
-			topologyDatas = loadTopologySummary(SERVER_IP, SERVER_PORT);
-			map.put("topologyDatas", topologyDatas);
+			List<TopologyData> topologyTmp;
+			topologyTmp = loadTopologySummary(SERVER_IP, SERVER_PORT);
+			if(topologyDatas == null && topologyTmp != null){
+				 topologyDatas = topologyTmp;
+			}
+			synchronized (datas) {
+				datas.put("topologyDatas", topologyTmp);
+			}
 			// 获取Supervisor summary数据
 			supervisorDatas = loadSupervisorSummary(SERVER_IP, SERVER_PORT);
-			map.put("supervisorDatas", supervisorDatas);
+			synchronized (datas) {
+				datas.put("supervisorDatas", supervisorDatas);
+			}
 			// 获取bolts和spout数据
 			// 因为可能会有很多topology，所以需要查询多次
 			int topologySize = topologyDatas.size();
 			for (int i = 0; i < topologySize; i++) {
-				Map<String, Object> tmp = loadTopologyInfo(SERVER_IP, SERVER_PORT, topologyDatas.get(i).getTopologyId());
-				map.put(topologyDatas.get(i).getTopologyId(), tmp);
+				String topologyId = topologyDatas.get(i).getTopologyId(); 
+				moduleDataLoader = new ModuleDataLoader(this,topologyId);
+				moduleDataLoader.start();
 			}
-			
-			return map;
+			return datas;
 		} catch (IOException e) {
-			//加入日志系统
-			e.printStackTrace();
+			log.catching(e);
 			return null;
 		}
 	}
 	
 	
 	
+	/**
+	 * public T nextData() {
+		// 从storm中load数据
+		try {
+			// 获取cluster数据
+			clusterData = loadClusterSummary(SERVER_IP, SERVER_PORT);
+			synchronized (datas) {
+				datas.put("clusterData", clusterData);
+			}
+			// 获取topology summary数据
+			List<TopologyData> topologyTmp;
+			topologyTmp = loadTopologySummary(SERVER_IP, SERVER_PORT);
+			if(topologyDatas == null && topologyTmp != null){
+				 topologyDatas = topologyTmp;
+			}
+			synchronized (datas) {
+				datas.put("topologyDatas", topologyTmp);
+			}
+			// 获取Supervisor summary数据
+			supervisorDatas = loadSupervisorSummary(SERVER_IP, SERVER_PORT);
+			synchronized (datas) {
+				datas.put("supervisorDatas", supervisorDatas);
+			}
+			// 获取bolts和spout数据
+			// 因为可能会有很多topology，所以需要查询多次
+			int topologySize = topologyDatas.size();
+			for (int i = 0; i < topologySize; i++) {
+				String topologyId = topologyDatas.get(i).getTopologyId(); 
+				moduleDataLoader = new ModuleDataLoader(this,topologyId);
+				moduleDataLoader.start();
+			}
+			return datas;
+		} catch (IOException e) {
+			log.catching(e);
+			return null;
+		}
+	}
+	 * @param clusterIP
+	 * @param port
+	 * @return
+	 * @throws IOException
+	 */
+	
+	
 	// 获取cluster信息，只有一条数据
 		public ClusterData loadClusterSummary(String clusterIP, String port) throws IOException {
 			String urlString = "http://" + clusterIP + ":" + port + "/api/v1/cluster/summary";
-			String data = URLConnectionHelper(urlString);
+			String data = URLConnectionHelper.URLConnection(urlString);
 			JSONObject jsonObject = JSONObject.fromObject(data);
 			ClusterData clusterData = new ClusterData();
 			clusterData.setStormVersion(jsonObject.getString("stormVersion"));
@@ -106,14 +160,14 @@ public class DataLoaderStorm extends DataLoader {
 		// 获取Topology的数据，是一个list，表示多个TopologyData。
 		public List<TopologyData> loadTopologySummary(String clusterIP, String port) throws IOException {
 			String urlString = "http://" + clusterIP + ":" + port + "/api/v1/topology/summary";
-			String data = URLConnectionHelper(urlString);
+			String data = URLConnectionHelper.URLConnection(urlString);
 			String topologies = data.substring(data.indexOf("[") + 1, data.lastIndexOf("]"));
-			int count = getSubtringCount(topologies, "{");
+			int count = StringHelper.getSubtringCount(topologies, "{");
 			List<TopologyData> topologyDatas = new ArrayList<TopologyData>();
 			for (int i = 0; i < count; i++) {
 				TopologyData topologyData = new TopologyData();
-				String t = topologies.substring(getSubtringIndex(topologies, "{", i + 1),
-						getSubtringIndex(topologies, "}", i + 1) + 1);
+				String t = topologies.substring(StringHelper.getSubtringIndex(topologies, "{", i + 1),
+						StringHelper.getSubtringIndex(topologies, "}", i + 1) + 1);
 				JSONObject jsonObject = JSONObject.fromObject(t);
 				topologyData.setTopologyId(jsonObject.getString("id"));
 				topologyData.setEncodedId(jsonObject.getString("encodedId"));
@@ -131,13 +185,13 @@ public class DataLoaderStorm extends DataLoader {
 		// 返回所有的Supervisors。
 		public List<SupervisorData> loadSupervisorSummary(String clusterIP, String port) throws IOException {
 			String urlString = "http://" + clusterIP + ":" + port + "/api/v1/supervisor/summary";
-			String data = URLConnectionHelper(urlString);
+			String data = URLConnectionHelper.URLConnection(urlString);
 			String supervisors = data.substring(data.indexOf("[") + 1, data.lastIndexOf("]"));
-			int count = getSubtringCount(supervisors, "{");
+			int count = StringHelper.getSubtringCount(supervisors, "{");
 			List<SupervisorData> supervisorDatas = new ArrayList<SupervisorData>();
 			for (int i = 0; i < count; i++) {
-				String t = supervisors.substring(getSubtringIndex(supervisors, "{", i + 1),
-						getSubtringIndex(supervisors, "}", i + 1) + 1);
+				String t = supervisors.substring(StringHelper.getSubtringIndex(supervisors, "{", i + 1),
+						StringHelper.getSubtringIndex(supervisors, "}", i + 1) + 1);
 				JSONObject jsonObject = JSONObject.fromObject(t);
 				SupervisorData supervisorData = new SupervisorData();
 				supervisorData.setSupervisorId(jsonObject.getString("id"));
@@ -150,117 +204,6 @@ public class DataLoaderStorm extends DataLoader {
 			return supervisorDatas;
 		}
 
-
-		// 获取spout和bolts信息，map中有两条记录，key为spoutDatas和blotDatas，value都是list
-		public Map<String,Object> loadTopologyInfo(String clusterIP, String port, String topologyId) throws IOException {
-			String urlString = "http://" + clusterIP + ":" + port + "/api/v1/topology/" + topologyId;
-			String result = URLConnectionHelper(urlString);
-			// 解析spout数据
-			// substringOfSpouts:Spout部分的数据。查找[]中间的部分
-			String substringOfSpouts = result.substring(result.indexOf("\"spouts\"") + 9,
-					result.indexOf("]", result.indexOf("spouts")));
-			// 查询有多少条数据
-			int countOFLeftBrace = getSubtringCount(substringOfSpouts, "{");
-			List<SpoutData> spoutDatas = new ArrayList<SpoutData>();
-			// 返回的数据中有很多条spout，逐个解析。
-			for (int i = 0; i < countOFLeftBrace; i++) {
-				String tmp = substringOfSpouts.substring(getSubtringIndex(substringOfSpouts, "{", i + 1),
-						getSubtringIndex(substringOfSpouts, "}", i + 1) + 1);
-				JSONObject jsonObject = JSONObject.fromObject(tmp);
-				SpoutData spoutData = new SpoutData();
-				spoutData.setExecutors(jsonObject.getString("executors"));
-				spoutData.setEmitted(jsonObject.getString("emitted"));
-				spoutData.setCompleteLatency(jsonObject.getString("completeLatency"));
-				spoutData.setTransferred(jsonObject.getString("transferred"));
-				spoutData.setAcked(jsonObject.getString("acked"));
-				spoutData.setErrorPort(jsonObject.getString("errorPort"));
-				spoutData.setSpoutId(jsonObject.getString("spoutId"));
-				spoutData.setTasks(jsonObject.getString("tasks"));
-				spoutData.setTopologyId(topologyId);
-				spoutDatas.add(spoutData);
-			}
-			// 解析bolts数据
-			// substringOfBlots部分的数据。查找[]中间的部分
-			String substringOfBlots = result.substring(result.indexOf("\"bolts\"") + 9,
-					result.indexOf("}]", result.indexOf("bolts")) + 2);
-			// 查询数据条数
-			countOFLeftBrace = getSubtringCount(substringOfBlots, "{");
-			List<BoltData> blotDatas = new ArrayList<BoltData>();
-			// 逐条解析
-			for (int i = 0; i < countOFLeftBrace; i++) {
-				String tmp = substringOfBlots.substring(getSubtringIndex(substringOfBlots, "{", i + 1),
-						getSubtringIndex(substringOfBlots, "}", i + 1) + 1);
-				JSONObject jsonObject = JSONObject.fromObject(tmp);
-				BoltData blotData = new BoltData();
-				blotData.setExecutors(jsonObject.getString("executors"));
-				blotData.setEmitted(jsonObject.getString("emitted"));
-				blotData.setBoltId(jsonObject.getString("encodedBoltId"));
-				blotData.setTasks(jsonObject.getString("tasks"));
-				blotData.setTransferred(jsonObject.getString("transferred"));
-				blotData.setCapacity(jsonObject.getString("capacity"));
-				blotData.setExecuteLatency(jsonObject.getString("executeLatency"));
-				blotData.setExecuted(jsonObject.getString("executed"));
-				blotData.setProcessLatency(jsonObject.getString("processLatency"));
-				blotData.setAcked(jsonObject.getString("acked"));
-				blotData.setFailed(jsonObject.getString("failed"));
-				blotData.setTopologyId(topologyId);
-				blotDatas.add(blotData);
-			}
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("spoutDatas", spoutDatas);
-			map.put("blotDatas", blotDatas);
-			return map;
-		}
-
-		// 根据URL请求数据， 并返回result
-		public String URLConnectionHelper(String urlString) throws IOException {
-			URL url = new URL(urlString);
-			// 打开到此 URL 的连接并返回一个用于从该连接读入的 InputStream。
-			URLConnection uc = url.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-			StringBuffer json = new StringBuffer();
-			String data = null;
-			while ((data = in.readLine()) != null) {
-				json.append(data);
-			}
-			in.close();
-			data = json.toString();
-			return data;
-		}
-
-		// 查询一个字符串中特定字符串的个数
-		private int getSubtringCount(String string, String subString) {
-			String s = String.copyValueOf(string.toCharArray());
-			String ToFind = subString;
-			int index = 0;
-			int count = 0;
-			while (index != -1) {
-				index = s.indexOf(ToFind);
-				if (index == -1) {
-					break;
-				}
-				s = s.substring(index + ToFind.length());
-				count++;
-
-			}
-			return count;
-
-		}
-
-		// 查询一个字符串中特定字符串第n次出现的索引
-		private int getSubtringIndex(String _string, String subString, int n) {
-			String string = String.copyValueOf(_string.toCharArray());
-			Matcher slashMatcher = Pattern.compile("\\" + subString).matcher(string);
-			int mIdx = 0;
-			while (slashMatcher.find()) {
-				mIdx++;
-				// 当"/"符号第n次出现的位置
-				if (mIdx == n) {
-					break;
-				}
-			}
-			return slashMatcher.start();
-		}
 
 		public ClusterData getClusterData() {
 			return clusterData;
@@ -286,14 +229,29 @@ public class DataLoaderStorm extends DataLoader {
 			this.supervisorDatas = supervisorDatas;
 		}
 
-		public Map<String, Object> getMap() {
-			return map;
+		
+
+		public Map<String, Object> getDatas() {
+			return datas;
 		}
 
-		public void setMap(Map<String, Object> map) {
-			this.map = map;
+		public synchronized void setDatas(Map<String, Object> datas) {
+			this.datas = datas;
 		}
 
+
+		public String getSERVER_IP() {
+			return SERVER_IP;
+		}
+		public void setSERVER_IP(String sERVER_IP) {
+			SERVER_IP = sERVER_IP;
+		}
+		public String getSERVER_PORT() {
+			return SERVER_PORT;
+		}
+		public void setSERVER_PORT(String sERVER_PORT) {
+			SERVER_PORT = sERVER_PORT;
+		}
 		public List<BoltData> getBlotDatas() {
 			return blotDatas;
 		}
@@ -309,5 +267,7 @@ public class DataLoaderStorm extends DataLoader {
 		public void setSpoutDatas(List<SpoutData> spoutDatas) {
 			this.spoutDatas = spoutDatas;
 		}
+
+		
 		
 }

@@ -35,6 +35,26 @@ public class GlobalVariable {
 	 */
 	private static String INFLUXDBNAME = "storm";
 	
+	/**
+	 * 微博相机线程休眠时间
+	 */
+	private static long SLEEPTIME_WeiBoCameraDataloader = 1000 * 15;
+	
+	private static long SLEEPTIME_DataLoaderStorm = 1000 * 15;
+	
+	
+	public static long getSLEEPTIME_DataLoaderStorm() {
+		return SLEEPTIME_DataLoaderStorm;
+	}
+	public static synchronized void setSLEEPTIME_DataLoaderStorm(long sLEEPTIME_DataLoaderStorm) {
+		SLEEPTIME_DataLoaderStorm = sLEEPTIME_DataLoaderStorm;
+	}
+	public static long getSLEEPTIME_WeiBoCameraDataloader() {
+		return SLEEPTIME_WeiBoCameraDataloader;
+	}
+	public static synchronized void setSLEEPTIME_WeiBoCameraDataloader(long sLEEPTIME_WeiBoCameraDataloader) {
+		SLEEPTIME_WeiBoCameraDataloader = sLEEPTIME_WeiBoCameraDataloader;
+	}
 	public static String getINFLUXDB_SERVER_IP() {
 		return INFLUXDB_SERVER_IP;
 	}
