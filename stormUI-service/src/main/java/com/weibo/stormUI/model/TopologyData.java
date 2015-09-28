@@ -1,41 +1,52 @@
 package com.weibo.stormUI.model;
 
 public class TopologyData {
-	private String topologyId;
+	private String id;
 	private String encodedId;
-	private String topolotyName;
+	private String name;
 	private String status;
 	private String uptime;
 	private int tasksTotal;
 	private int workersTotal;
 	private int executorsTotal;
 	
+	
 	@Override
 	public String toString() {
-		return "topologyId = " + topologyId + ",encodedId = " + encodedId
-				+ ",topolotyName = " + topolotyName + ",status = " + status
+		return "topologyId = " + id + ",encodedId = " + encodedId
+				+ ",topolotyName = " + name + ",status = " + status
 				+ ",uptime = " + uptime + ",tasksTotal = " + tasksTotal
 				+ ",workersTotal = " + workersTotal + ",executorsTotal = " + executorsTotal;
 	}
 	
-	public String getTopologyId() {
-		return topologyId;
+	
+	public String getId() {
+		return id;
 	}
-	public void setTopologyId(String topologyId) {
-		this.topologyId = topologyId;
+
+
+	public void setId(String id) {
+		this.id = id;
 	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
 	public String getEncodedId() {
 		return encodedId;
 	}
 	public void setEncodedId(String encodedId) {
 		this.encodedId = encodedId;
 	}
-	public String getTopolotyName() {
-		return topolotyName;
-	}
-	public void setTopolotyName(String topolotyName) {
-		this.topolotyName = topolotyName;
-	}
+	
 	public String getStatus() {
 		return status;
 	}

@@ -1,7 +1,8 @@
 package com.weibo.stormUI.model;
 
 public class SupervisorData {
-	private String supervisorId;
+	private String supervisors;
+	private String id;
 	private String host;
 	private String uptime;
 	private int slotsTotal;
@@ -9,17 +10,22 @@ public class SupervisorData {
 	
 	@Override
 	public String toString() {
-		return "supervisorId = " + supervisorId + ",host = " + host
+		return "id = " + id + ",host = " + host
 				+ ",uptime = " + uptime + ",slotsTotal = " + slotsTotal
 				+ ",slotsUsed = " + slotsUsed ;
 	}
 	
-	public String getSupervisorId() {
-		return supervisorId;
+	
+	public String getId() {
+		return id;
 	}
-	public void setSupervisorId(String supervisorId) {
-		this.supervisorId = supervisorId;
+
+
+	public void setId(String id) {
+		this.id = id;
 	}
+
+
 	public String getHost() {
 		return host;
 	}
@@ -43,6 +49,14 @@ public class SupervisorData {
 	}
 	public void setSlotsUsed(int slotsUsed) {
 		this.slotsUsed = slotsUsed;
+	}
+
+	public String getSupervisors() {
+		return supervisors;
+	}
+
+	public void setSupervisors(String supervisors) {
+		this.supervisors = supervisors;
 	}
 
 	

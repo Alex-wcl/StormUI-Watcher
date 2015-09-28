@@ -6,7 +6,7 @@
   <display-name>StormUI</display-name>
   
   <!--  classpath为resources根目录路径 -->
-   <context-param>
+    <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:springConfig.xml
@@ -15,7 +15,7 @@
     
      <listener>
 	    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	  </listener> 
+	  </listener>
 	  
 	  <!-- web容器启动之后，开启一个线程读取storm集群中的信息 -->
 	   <listener>  

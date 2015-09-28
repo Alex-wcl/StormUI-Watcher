@@ -2,127 +2,175 @@ package com.weibo.stormUI.dataPersistencer.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDB.LogLevel;
+import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.Point;
+import org.influxdb.dto.Query;
+import org.influxdb.dto.QueryResult;
 import org.springframework.stereotype.Component;
 
+import com.weibo.stormUI.dataLoader.module.ModuleDataLoader;
 import com.weibo.stormUI.dataPersistencer.DataPersistencer;
 import com.weibo.stormUI.model.BoltData;
 import com.weibo.stormUI.model.ClusterData;
+import com.weibo.stormUI.model.SpoutADNBolt;
 import com.weibo.stormUI.model.SpoutData;
 import com.weibo.stormUI.model.SupervisorData;
 import com.weibo.stormUI.model.TopologyData;
-import com.weibo.stormUI.util.GlobalVariable;
-import com.weibo.stormUI.util.InfluxDBUtil;
 
 @Component
-public class DataPersistencerImpl implements DataPersistencer{
-	
-	private static final Logger log = LogManager.getLogger(DataPersistencerImpl.class);
-	// 初始化五个数据操作类
-	InfluxDBUtil<ClusterData> clusterInfluxDB = new InfluxDBUtil<ClusterData>();
-	InfluxDBUtil<TopologyData> topologyInfluxDB = new InfluxDBUtil<TopologyData>();
-	InfluxDBUtil<BoltData> boltInfluxDB = new InfluxDBUtil<BoltData>();
-	InfluxDBUtil<SpoutData> spoutInfluxDB = new InfluxDBUtil<SpoutData>();
-	InfluxDBUtil<SupervisorData> supervisorInfluxDB = new InfluxDBUtil<SupervisorData>();
-	// 持久化服务器的ip地址
-	public  String SERVER_IP;
-	// 服务器提供的端口号
-	public String SERVER_PORT;
-	// 数据库用户名和密码
-	public String DB_USERNAME;
-	public String DB_PASSWORD;
-	// 要创建的数据库的名称
-	public String INFLUXDBNAME;
-	
-	public Map<String ,Object> datas;
-	
-	public List<String> topologyIds = new ArrayList<String>();
+public class DataPersistencerImpl<T> implements DataPersistencer<T> {
+	private Logger log = LogManager.getLogger(DataPersistencerImpl.class);
+	private static InfluxDB INFLUXDB;
+	private static String DBNAME;
+	private static String IP;
+	private static String PORT;
 	
 	
-//	public DataPersistencerImpl(){
-//		super("10.77.108.126","8086","root","root","storm");
-//		clusterInfluxDB.setUp(SERVER_IP, SERVER_PORT, DB_USERNAME, DB_PASSWORD);
-//		clusterInfluxDB.createDB(INFLUXDBNAME);
-//	}
-	public DataPersistencerImpl(String serverIP, String serverPORT, String DBUserName, String DBPassword,
-			String DBName,Map<String ,Object> datasMap) {
-		this.SERVER_IP = serverIP;
-		this.SERVER_PORT = serverPORT;
-		this.DB_USERNAME = DBUserName;
-		this.DB_PASSWORD = DBPassword;
-		this.INFLUXDBNAME = DBName;
-		this.datas = datasMap;
-		// 初始化数据连接。只要一次就行了，因为成员变量公用。
-		clusterInfluxDB.setUp(SERVER_IP, SERVER_PORT, DB_USERNAME, DB_PASSWORD);
-		clusterInfluxDB.createDB(INFLUXDBNAME);
-		topologyIds.add("weibo-camera-message-processor-online-1-25-7448-92-1442976290");
-		topologyIds.add("nc-push-storm-1-0-23-3241-67-1442297146");
-		topologyIds.add("groupchat-storm-offline-3-0-47-7000-71-1442309535");
-		topologyIds.add("groupchat-storm-online-3-0-47-26441-70-1442309452");
-		topologyIds.add("msgs-router-20150906-39-1441507512");
-		topologyIds.add("webim_storm-1-0-9-28290-72-1442309603");
+	public InfluxDB setUp(String ip, String port, String userNameOFInfluxDB, String passwd) {
+		if(INFLUXDB == null){
+			synchronized (this) {
+				if(INFLUXDB == null){
+					IP = ip;
+					PORT = port;
+					INFLUXDB = InfluxDBFactory.connect("http://" + IP + ":" + PORT, userNameOFInfluxDB, passwd);
+					INFLUXDB.setLogLevel(LogLevel.NONE);
+					
+				}
+			}
+		}
+		return INFLUXDB;
 	}
-	
-	
-	public boolean saveData() {
-		log.info("datas insert starting...");
-		if(datas != null){
-			ClusterData clusterData = (ClusterData)datas.get("clusterData");
-			if(clusterData != null){
-				log.info("clusterData insert starting");
-				clusterInfluxDB.insertData(clusterData);
-				synchronized (datas) {
-					datas.remove("clusterData");
+
+	public boolean createDB(String dbName) {
+
+		if(DBNAME == null && dbName != null){
+			synchronized(this){
+				if(DBNAME == null){
+					List<String> dbs = INFLUXDB.describeDatabases();
+					for(String tmp : dbs){
+						if(tmp != null && tmp.equals(dbName)){
+							DBNAME = dbName;
+							INFLUXDB.enableBatch(20000000, 600, TimeUnit.MILLISECONDS);
+							log.info("数据库已经存在!" + "dbName : " + dbName);
+							return true;
+						}
+					}
+					INFLUXDB.createDatabase(dbName);
+					DBNAME = dbName;
+					INFLUXDB.enableBatch(20000000, 600, TimeUnit.MILLISECONDS);
 				}
-				log.info("clusterData insert successfully");
 			}
-			List<TopologyData> topologyDatas = (List<TopologyData>)datas.get("topologyDatas");
-			if(topologyDatas != null){
-				log.info("topologyDatas insert starting");
-				topologyInfluxDB.insertDatas(topologyDatas);
-				synchronized (datas) {
-					datas.remove("topologyDatas");
-				}
-				log.info("topologyDatas insert successfully");
+		}
+
+		return true;
+	}
+
+	//插入一条数据
+	public <T> boolean insertData(T object) {
+		Point point = null;
+		if(object != null){
+			//如果保存的是ClusterData数据
+			if(object instanceof ClusterData){
+				ClusterData tmp = (ClusterData)object;
+				point = Point.measurement("cluster")
+						.field("nimbusUptime", tmp.getNimbusUptime()).field("supervisors", tmp.getSupervisors())
+						.field("slotsTotal", tmp.getSlotsTotal()).field("slotsUsed", tmp.getSlotsUsed())
+						.field("slotsFree", tmp.getSlotsFree()).field("executorsTotal", tmp.getExecutorsTotal())
+						.field("tasksTotal", tmp.getTasksTotal()).time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+						.tag("stormVersion",tmp.getStormVersion())
+						.build();
 			}
-			List<SupervisorData> supervisorDatas = (List<SupervisorData>)datas.get("supervisorDatas");
-			if(supervisorDatas != null){
-				log.info("supervisorDatas insert starting");
-				supervisorInfluxDB.insertDatas(supervisorDatas);
-				synchronized (datas) {
-					datas.remove("supervisorDatas");
+			//如果保存的是BlotData数据
+			if(object instanceof SpoutADNBolt ){
+				SpoutADNBolt spoutADNBolt = (SpoutADNBolt)object;
+				List<BoltData> listBoltData = spoutADNBolt.getBoltDatas();
+				List<SpoutData> listSpoutData = spoutADNBolt.getSpoutDatas();
+				for(BoltData tmp : listBoltData){
+					point = Point.measurement("bolt")
+							.field("executors", tmp.getExecutors()).field("tasks", tmp.getTasks())
+							.field("emitted", tmp.getEmitted()).field("transferred", tmp.getTransferred())
+							.field("capacity", tmp.getCapacity()).field("executeLatency", tmp.getExecuteLatency())
+							.field("executed", tmp.getExecuted()).field("processLatency", tmp.getProcessLatency())
+							.field("acked", tmp.getAcked()).field("failed", tmp.getFailed())
+							.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+							.tag("topologyId",invertTopologyId(tmp.getTopologyId()))
+							.tag("boltId", tmp.getBoltId())
+							.build();
+					INFLUXDB.write(DBNAME, "default", point);
 				}
-				log.info("supervisorDatas insert successfully");
+				for(SpoutData tmp : listSpoutData){
+					point = Point.measurement("spout").field("executors", tmp.getExecutors())
+							.field("emitted", tmp.getEmitted())
+							.field("completeLatency", tmp.getCompleteLatency()).field("transferred", tmp.getTransferred())
+							.field("acked", tmp.getAcked()).field("tasks", tmp.getTasks())
+							.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+							.tag("topologyId", invertTopologyId(tmp.getTopologyId()))
+							.tag("spoutId", tmp.getSpoutId())
+							.build();
+					INFLUXDB.write(DBNAME, "default", point);
+				}
+				return true;
 			}
 			
-			int topologySize = topologyIds.size();
-			for(int i = 0;i < topologySize;i++){
-				Map<String,Object> spoutsANDBolts = (Map<String, Object>)datas.get(topologyIds.get(i));
-				if(spoutsANDBolts != null){
-					log.info("spoutsANDBolts insert starting");
-					List<BoltData> boltDatas = (List<BoltData>) spoutsANDBolts.get("boltDatas");
-					List<SpoutData> spoutDatas = (List<SpoutData>) spoutsANDBolts.get("spoutDatas");
-					boltInfluxDB.insertDatas(boltDatas);
-					synchronized (datas) {
-						datas.remove("boltDatas");
-					}
-					log.info("boltDatas insert successfully");
-					spoutInfluxDB.insertDatas(spoutDatas);
-					synchronized (datas) {
-						datas.remove("spoutDatas");
-					}
-					log.info("spoutDatas insert successfully");
-				}
+			//如果保存的是SupervisorData数据
+			if(object instanceof SupervisorData){
+				SupervisorData tmp = (SupervisorData)object;
+				point = Point.measurement("supervisor").field("uptime", tmp.getUptime())
+						.field("slotsTotal", tmp.getSlotsTotal()).field("slotsUsed", tmp.getSlotsUsed())
+						.tag("supervisorId", tmp.getId()).tag("host", tmp.getHost())
+						.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+						.build();
 			}
-			log.info("datas insert end");
+			//如果保存的是TopologyData
+			if(object instanceof TopologyData){
+				TopologyData tmp = (TopologyData)object;
+				point = Point.measurement("topology").field("uptime", tmp.getUptime())
+						.field("tasksTotal", tmp.getTasksTotal()).field("workersTotal", tmp.getWorkersTotal())
+						.field("executorsTotal", tmp.getExecutorsTotal())
+						.tag("topologyId", invertTopologyId(tmp.getId())).tag("topolotyName",tmp.getName())
+						.tag("status", tmp.getStatus()).tag("encodedId", tmp.getEncodedId())
+						.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+						.build();
+			}
+			INFLUXDB.write(DBNAME, "default", point);
 			return true;
-		}else{
-			log.info("datas is null");
-			return false;
 		}
+		return false;
+	}
+	
+	//插入多条记录
+	public boolean saveData(List<T> objects) {
+		if(objects != null){
+			for(T tmp : objects){
+				insertData(tmp);
+			}
+		}
+		return true;
+	}
+	
+	public void getData(){
+		String queryCommand = "select stormVersion from cluster";
+		Query query = new Query(queryCommand, DBNAME);
+		QueryResult result = INFLUXDB.query(query);
+		List lists = result.getResults();
+		System.out.println("开始打印数据！");
+		for(int i = 0;i < lists.size();i++){
+			System.out.println(lists.get(i));
+		}
+		System.out.println("打印结束！");
+	}
+	public String invertTopologyId(String topologyId){
+		int size = topologyId.length();
+		if(size >=30 && (topologyId.substring(0, 30)).equals("weibo-camera-message-processor")){
+			return topologyId.substring(0, 30);
+		}
+		return topologyId;
 	}
 
 

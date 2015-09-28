@@ -10,7 +10,26 @@ public class SpoutData {
 	private String spoutId;
 	private String tasks;
 	private String topologyId;
+	private String errorLapsedSecs;
 	
+	
+	/**
+	 * "executors":1,
+	 * "emitted":1133200,
+	 * "errorLapsedSecs":null,
+	 * "completeLatency":"0.000",
+	 * "transferred":1133200,
+	 * "acked":1133180,
+	 * "errorPort":"",
+	 * "spoutId":"grouptag_spout",
+	 * "tasks":1,
+	 * "errorHost":"",
+	 * "lastError":"",
+	 * "errorWorkerLogLink":"http://:8000/log?file=worker-.log",
+	 * "failed":0,
+	 * "encodedSpoutId":
+	 * "grouptag_spout"
+	 */
 	@Override
 	public String toString() {
 		return "executors = " + executors + ",emitted = " + emitted
@@ -25,6 +44,18 @@ public class SpoutData {
 
 	
 	
+	public String getErrorLapsedSecs() {
+		return errorLapsedSecs;
+	}
+
+
+
+	public void setErrorLapsedSecs(String errorLapsedSecs) {
+		this.errorLapsedSecs = errorLapsedSecs;
+	}
+
+
+
 	public String getTopologyId() {
 		return topologyId;
 	}

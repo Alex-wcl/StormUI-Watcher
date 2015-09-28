@@ -1,5 +1,7 @@
 package com.weibo.stormUI.dataLoader;
 
+import java.util.List;
+
 public interface DataLoader<T> {
-	public T nextData();
+	public List<T> nextData();
 }

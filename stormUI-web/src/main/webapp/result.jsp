@@ -8,6 +8,6 @@
 </head>
 <body>
 	跳转！<br>
-	<%-- <%=request.getAttribute("clientName") %> --%>
+	DataProcessor sleep time:
 </body>
 </html>

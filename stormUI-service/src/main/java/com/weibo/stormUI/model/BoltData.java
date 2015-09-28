@@ -13,6 +13,7 @@ public class BoltData {
 	private String acked;
 	private String failed;
 	private String topologyId;
+	private String errorLapsedSecs;
 	
 	@Override
 	public String toString() {
@@ -26,10 +27,14 @@ public class BoltData {
 				+ ",topologyId = " + topologyId;
 	}
 
-	
-	
-	
 
+	public String getErrorLapsedSecs() {
+		return errorLapsedSecs;
+	}
+
+	public void setErrorLapsedSecs(String errorLapsedSecs) {
+		this.errorLapsedSecs = errorLapsedSecs;
+	}
 
 
 	public String getBoltId() {
