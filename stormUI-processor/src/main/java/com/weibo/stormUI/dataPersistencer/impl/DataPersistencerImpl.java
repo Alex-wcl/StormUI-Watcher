@@ -153,18 +153,12 @@ public class DataPersistencerImpl<T> implements DataPersistencer<T> {
 		}
 		return true;
 	}
-	
-	public void getData(){
-		String queryCommand = "select stormVersion from cluster";
-		Query query = new Query(queryCommand, DBNAME);
-		QueryResult result = INFLUXDB.query(query);
-		List lists = result.getResults();
-		System.out.println("开始打印数据！");
-		for(int i = 0;i < lists.size();i++){
-			System.out.println(lists.get(i));
-		}
-		System.out.println("打印结束！");
-	}
+	/**
+	 * 每一次weibo-camera-message-processor上线id都会改变，而前端显示时会根据其id唯一判断并显示，
+	 * 这样会导致出现很多weibo-camera-message-processor，因此将先后上线的weibo-camera-message-processor都设置为相同的id
+	 * @param topologyId
+	 * @return
+	 */
 	public String invertTopologyId(String topologyId){
 		int size = topologyId.length();
 		if(size >=30 && (topologyId.substring(0, 30)).equals("weibo-camera-message-processor")){

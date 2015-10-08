@@ -35,7 +35,13 @@
         <servlet-name>SupervisorServlet</servlet-name>
         <servlet-class>com.weibo.stormUI.servlet.SupervisorServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+    	<servlet-name>VariableServlet</servlet-name>
+    	<description></description>
+    	<servlet-class>com.weibo.stormUI.servlet.VariableServlet</servlet-class>
     </servlet> 
+   
      
 
 	<!-- 拦截前端指定URL -->
@@ -57,5 +63,9 @@
     <servlet-mapping>
         <servlet-name>SupervisorServlet</servlet-name>
        <url-pattern>/supervisor/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>VariableServlet</servlet-name>
+    	<url-pattern>/VariableServlet</url-pattern>
     </servlet-mapping> 
 </web-app>
