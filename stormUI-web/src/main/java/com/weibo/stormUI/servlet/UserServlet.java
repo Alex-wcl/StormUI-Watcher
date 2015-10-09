@@ -36,13 +36,9 @@ public class UserServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		String userName=request.getParameter("username");
 		String password=request.getParameter("password");
-		if(userName != null && password != null){
-			userName=new String(userName.getBytes("ISO-8859-1"),"GB2312");
-			password=new String(password.getBytes("ISO-8859-1"),"GB2312");
-		}else{
-			request.getRequestDispatcher("/error.html").forward(request, response); 
-			return ;
-		}
+		userName=new String(userName.getBytes("ISO-8859-1"),"GB2312");
+		password=new String(password.getBytes("ISO-8859-1"),"GB2312");
+		
 		boolean isValidate = false;
 		try {
 			isValidate = userValidate(Thread.currentThread().getContextClassLoader().getResource("users.xml"),userName,password);
@@ -56,7 +52,8 @@ public class UserServlet extends HttpServlet {
 			session.setAttribute("password", password);
 			request.getRequestDispatcher("/variables.jsp").forward(request, response);
 		}else{
-			request.getRequestDispatcher("/error.html").forward(request, response); 
+			request.setAttribute("msg", "username_error");
+			request.getRequestDispatcher("/index.jsp").forward(request, response);
 			//未通过验证
 		}
 	}
