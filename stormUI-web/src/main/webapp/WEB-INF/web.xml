@@ -38,9 +38,14 @@
     </servlet>
     <servlet>
     	<servlet-name>VariableServlet</servlet-name>
-    	<description></description>
     	<servlet-class>com.weibo.stormUI.servlet.VariableServlet</servlet-class>
+    </servlet>
+    <servlet>
+    	<servlet-name>UserServlet</servlet-name>
+    	<servlet-class>com.weibo.stormUI.servlet.UserServlet</servlet-class>
     </servlet> 
+    
+    
    
      
 
@@ -66,6 +71,10 @@
     </servlet-mapping>
     <servlet-mapping>
     	<servlet-name>VariableServlet</servlet-name>
-    	<url-pattern>/VariableServlet</url-pattern>
+    	<url-pattern>/VariableServlet/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>UserServlet</servlet-name>
+    	<url-pattern>/UserServlet/*</url-pattern>
     </servlet-mapping> 
 </web-app>

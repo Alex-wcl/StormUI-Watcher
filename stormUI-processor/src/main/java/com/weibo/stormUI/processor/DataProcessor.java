@@ -57,17 +57,17 @@ public class DataProcessor implements Runnable {
 		influxDBUtil.createDB(variables.DataBaseName);
 		while(true){
 			Stopwatch watch = Stopwatch.createStarted();
-			List<SpoutADNBolt> spoutADNBoltData = boltDataLoader.nextData();
-			List<SupervisorData> supervisorData = supervisorDataLoader.nextData();
-			List<ClusterData> clusterData = clusterDataLoader.nextData();
-			List<TopologyData> topologyData = topologyDataLoader.nextData();
-			log.info("loadDataTime = " + watch);
-			watch.reset();
-			watch.start();
-			influxDBUtil.saveData(spoutADNBoltData);
-			influxDBUtil.saveData(supervisorData);
-			influxDBUtil.saveData(clusterData);
-			influxDBUtil.saveData(topologyData);
+//			List<SpoutADNBolt> spoutADNBoltData = boltDataLoader.nextData();
+//			List<SupervisorData> supervisorData = supervisorDataLoader.nextData();
+//			List<ClusterData> clusterData = clusterDataLoader.nextData();
+//			List<TopologyData> topologyData = topologyDataLoader.nextData();
+//			log.info("loadDataTime = " + watch);
+//			watch.reset();
+//			watch.start();
+//			influxDBUtil.saveData(spoutADNBoltData);
+//			influxDBUtil.saveData(supervisorData);
+//			influxDBUtil.saveData(clusterData);
+//			influxDBUtil.saveData(topologyData);
 			log.info("insertDataTime = " + watch);
 			try {
 				Thread.sleep(variables.DataProcessorSleepTime);
