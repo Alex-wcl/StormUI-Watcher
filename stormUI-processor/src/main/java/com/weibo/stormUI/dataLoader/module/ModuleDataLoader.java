@@ -37,7 +37,7 @@ public class ModuleDataLoader extends Thread {
 	public void run() {
 		SpoutADNBolt spoutAndBolt = loadTopologyInfo(dataLoaderStorm.getSERVER_IP(),dataLoaderStorm.getSERVER_PORT(),topologyId);
 		dataLoaderStorm.getElems().add(spoutAndBolt);
-		log.info("topologyId : " + topologyId +  "，spoutANDbolt = " + spoutAndBolt);
+		log.info("spoutANDbolt of " + "topology : " + topologyId);
 		latch.countDown();
 	}
 	

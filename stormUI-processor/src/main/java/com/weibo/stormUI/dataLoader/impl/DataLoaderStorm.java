@@ -39,20 +39,6 @@ public class DataLoaderStorm<T> implements DataLoader<T>{
 		this.elems = new ArrayList<T>();
 	}
 	
-	/**
-	 * map中的结构：
-	 * 		key   				value				value type
-	 * 	clusterData			clusterData			ClusterData
-	 * 	topologyDatas  		topologyDatas		List<TopologyData>
-	 * 	supervisorDatas		supervisorDatas		List<SupervisorData>
-	 * 	'topologyID01'		mapSpoutAndBolt		Map<String, Object>
-	 * 	'topologyID02'		mapSpoutAndBolt		Map<String, Object>
-	 * 	.....
-	 * 
-	 * 	其中：mapSpoutAndBolt的结构为
-	 * 	spoutDatas 			spoutDatas			List<SpoutData>
-	 * 	blotDatas			blotDatas			List<BoltData>
-	 */
 	public List<T> nextData() {
 		this.elems = new ArrayList<T>();
 		String item = "";
@@ -98,7 +84,7 @@ public class DataLoaderStorm<T> implements DataLoader<T>{
 			}
 			datas  = (T)jsonObject.toBean(jsonObject, datas.getClass());
 			elems.add(datas);
-			log.info(datas.getClass().getName() + i + ",key = " + datas.getClass().getName() + i + ",value = " + datas);
+			log.info(datas.getClass().getName() + i);
 		}
 		return elems;
 	}
