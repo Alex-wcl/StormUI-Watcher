@@ -5,9 +5,10 @@
 该项目目前有三个模块，web模块，service模块，processor模块。
 web模块是与前端做交互使用。service模块是核心处理模块。processor模块是从storm集群中load数据，并存储到本地influxDB中。
 ## 项目部署
-将项目导出之后，需要在web模块上添加Server Runtime。右击stormUI-web-->Build Path-->Configuer Build Path-->Libraries-->Add library-->Server Runtime,选择当前使用的server。
+* cmd进入项目主目录，使用maven命令:mvn package打包
 ## 项目运行
-* 运行stormUI-web项目。右击stormUI-web-->Run As-->Run on Server。
-* 浏览器输入http://grafana所在的服务器IP地址:3000/login，用户名和密码admin
-* 在右侧图表中点击想要查看的项即可。
+* 将war包导入到服务器软件
+* 输入用户名密码：stormwatcher，可对系统运行参数进行修改
+* 浏览器输入http://10.77.108.126:3000/login，用户名和密码admin
+* 注：如果仅想进入监控页面，可以直接操作上面的url，不需要运行该项目
 		
