@@ -50,6 +50,7 @@ public class DataLoaderStorm<T> implements DataLoader<T>{
 				CountDownLatch latch = new CountDownLatch(size);
 				for(int i = 0;i < topologyIds.size();i++){
 					moduleDataLoader = new ModuleDataLoader(this,topologyIds.get(i),latch,i);
+					moduleDataLoader.setName(topologyIds.get(i));
 					moduleDataLoader.start();
 				}
 				try {
@@ -61,7 +62,11 @@ public class DataLoaderStorm<T> implements DataLoader<T>{
 			return elems;
 		}
 		
-		item = datas.getClass().getName().substring(datas.getClass().getName().lastIndexOf(".")+1, datas.getClass().getName().indexOf("Data")).toLowerCase() + "/summary";
+		try{
+			item = datas.getClass().getName().substring(datas.getClass().getName().lastIndexOf(".")+1, datas.getClass().getName().indexOf("Data")).toLowerCase() + "/summary";
+		}catch(Exception e){
+			log.catching(e);
+		}
 		urlString = "http://" + SERVER_IP + ":" + SERVER_PORT + "/api/v1/" + item;
 		data = URLConnectionHelper.URLConnection(urlString);
 		String stringDatas = null;

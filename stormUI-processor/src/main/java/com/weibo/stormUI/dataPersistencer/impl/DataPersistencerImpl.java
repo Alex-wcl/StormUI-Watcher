@@ -99,7 +99,7 @@ public class DataPersistencerImpl<T> implements DataPersistencer<T> {
 							.field("executed", tmp.getExecuted()).field("processLatency", tmp.getProcessLatency())
 							.field("acked", tmp.getAcked()).field("failed", tmp.getFailed())
 							.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-							.tag("topologyId",invertTopologyId(tmp.getTopologyId()))
+							.tag("topologyId",tmp.getTopologyId())
 							.tag("boltId", tmp.getBoltId())
 							.build();
 					INFLUXDB.write(DBNAME, "default", point);
@@ -110,7 +110,7 @@ public class DataPersistencerImpl<T> implements DataPersistencer<T> {
 							.field("completeLatency", tmp.getCompleteLatency()).field("transferred", tmp.getTransferred())
 							.field("acked", tmp.getAcked()).field("tasks", tmp.getTasks())
 							.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-							.tag("topologyId", invertTopologyId(tmp.getTopologyId()))
+							.tag("topologyId", tmp.getTopologyId())
 							.tag("spoutId", tmp.getSpoutId())
 							.build();
 					INFLUXDB.write(DBNAME, "default", point);
@@ -131,10 +131,13 @@ public class DataPersistencerImpl<T> implements DataPersistencer<T> {
 			if(object instanceof TopologyData){
 				TopologyData tmp = (TopologyData)object;
 				point = Point.measurement("topology").field("uptime", tmp.getUptime())
-						.field("tasksTotal", tmp.getTasksTotal()).field("workersTotal", tmp.getWorkersTotal())
+						.field("tasksTotal", tmp.getTasksTotal())
+						.field("workersTotal", tmp.getWorkersTotal())
 						.field("executorsTotal", tmp.getExecutorsTotal())
-						.tag("topologyId", invertTopologyId(tmp.getId())).tag("topolotyName",tmp.getName())
-						.tag("status", tmp.getStatus()).tag("encodedId", tmp.getEncodedId())
+						.tag("topologyId", tmp.getId())
+						.tag("topolotyName",tmp.getName())
+						.tag("status", tmp.getStatus())
+						.tag("encodedId", tmp.getEncodedId())
 						.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
 						.build();
 			}
@@ -154,18 +157,21 @@ public class DataPersistencerImpl<T> implements DataPersistencer<T> {
 		return true;
 	}
 	/**
+	 * version 1 
 	 * 每一次weibo-camera-message-processor上线id都会改变，而前端显示时会根据其id唯一判断并显示，
 	 * 这样会导致出现很多weibo-camera-message-processor，因此将先后上线的weibo-camera-message-processor都设置为相同的id
+	 * version 2
+	 * 将所有的topology都显示出来，不要截取
 	 * @param topologyId
 	 * @return
 	 */
-	public String invertTopologyId(String topologyId){
+	/*public String invertTopologyId(String topologyId){
 		int size = topologyId.length();
 		if(size >=30 && (topologyId.substring(0, 30)).equals("weibo-camera-message-processor")){
 			return topologyId.substring(0, 30);
 		}
 		return topologyId;
-	}
+	}*/
 
 
 }

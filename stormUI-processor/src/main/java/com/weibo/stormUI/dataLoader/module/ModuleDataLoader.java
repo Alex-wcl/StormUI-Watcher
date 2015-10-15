@@ -35,7 +35,12 @@ public class ModuleDataLoader extends Thread {
 	}
 
 	public void run() {
-		SpoutADNBolt spoutAndBolt = loadTopologyInfo(dataLoaderStorm.getSERVER_IP(),dataLoaderStorm.getSERVER_PORT(),topologyId);
+		SpoutADNBolt spoutAndBolt = null;
+		try{
+			spoutAndBolt = loadTopologyInfo(dataLoaderStorm.getSERVER_IP(),dataLoaderStorm.getSERVER_PORT(),topologyId);
+		}catch(Exception e){
+			log.catching(e);
+		}
 		dataLoaderStorm.getElems().add(spoutAndBolt);
 		log.info("spoutANDbolt of " + "topology : " + topologyId);
 		latch.countDown();
@@ -45,6 +50,7 @@ public class ModuleDataLoader extends Thread {
 	// 获取spout和bolts信息，map中有两条记录，key为spoutDatas和blotDatas，value都是list
 			public SpoutADNBolt loadTopologyInfo(String clusterIP, String port, String topologyId) {
 				String urlString = "http://" + clusterIP + ":" + port + "/api/v1/topology/" + topologyId;
+				log.info(topologyId + "," + urlString);
 				String result = URLConnectionHelper.URLConnection(urlString);
 				// 解析spout数据
 				// substringOfSpouts:Spout部分的数据。查找[]中间的部分

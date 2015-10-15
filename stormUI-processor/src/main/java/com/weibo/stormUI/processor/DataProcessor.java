@@ -22,46 +22,38 @@ import com.weibo.stormUI.po.Variables;
 public class DataProcessor implements Runnable {
 	private static final Logger log = LogManager.getLogger(DataProcessor.class);
 	private List<String> topologyIds;
-	private String server_IP;
-	private String server_PORT;
-	private List<TopologyData> datas;
 	private Variables variables;
 	public DataProcessor(){
-		datas = new ArrayList<TopologyData>();
 		variables = Variables.getInstance();
-		server_IP = variables.DataSourceServerIP;
-		server_PORT = variables.DataSourceServerPort;
 	}
 	public void run() {
 		try{
 			//初始化topologyIds
-			DataLoader<TopologyData> topologyDataLoader = new DataLoaderStorm<TopologyData>(server_IP,server_PORT,new TopologyData(),topologyIds);
-			datas = topologyDataLoader.nextData();
-			if(topologyIds == null){
-				topologyIds = new ArrayList<String>();
-				for(TopologyData tmp : datas){
-					topologyIds.add(tmp.getId());
-				}
-			}
-			DataLoader<SpoutADNBolt> boltDataLoader = new DataLoaderStorm<SpoutADNBolt>(server_IP,server_PORT,new SpoutADNBolt(),topologyIds);
-			DataLoader<SupervisorData> supervisorDataLoader = new DataLoaderStorm<SupervisorData>(server_IP,server_PORT,new SupervisorData(),topologyIds);
-			DataLoader<ClusterData> clusterDataLoader = new DataLoaderStorm<ClusterData>(server_IP,server_PORT,new ClusterData(),topologyIds);
+			DataLoader<TopologyData> topologyDataLoader = new DataLoaderStorm<TopologyData>(variables.DataSourceServerIP,variables.DataSourceServerPort,new TopologyData(),topologyIds);
+			DataLoader<SupervisorData> supervisorDataLoader = new DataLoaderStorm<SupervisorData>(variables.DataSourceServerIP,variables.DataSourceServerPort,new SupervisorData(),topologyIds);
+			DataLoader<ClusterData> clusterDataLoader = new DataLoaderStorm<ClusterData>(variables.DataSourceServerIP,variables.DataSourceServerPort,new ClusterData(),topologyIds);
 			DataPersistencerImpl influxDBUtil = new DataPersistencerImpl();
 			influxDBUtil.setUp(variables.DataBaseServerIP,variables.DataBaseServerPort,variables.DataBaseUserName,variables.DataBasePassword);
 			influxDBUtil.createDB(variables.DataBaseName);
 			while(true){
 				Stopwatch watch = Stopwatch.createStarted();
+				List<TopologyData> topologyData = topologyDataLoader.nextData();
+				//为了避免topologyId可能会变的情况，将每一次查询的topologyId重新保存。
+				topologyIds = new ArrayList<String>();
+				for(TopologyData tmp : topologyData){
+					topologyIds.add(tmp.getId());
+				}
+				DataLoader<SpoutADNBolt> boltDataLoader = new DataLoaderStorm<SpoutADNBolt>(variables.DataSourceServerIP,variables.DataSourceServerPort,new SpoutADNBolt(),topologyIds);
 				List<SpoutADNBolt> spoutADNBoltData = boltDataLoader.nextData();
 				List<SupervisorData> supervisorData = supervisorDataLoader.nextData();
 				List<ClusterData> clusterData = clusterDataLoader.nextData();
-				List<TopologyData> topologyData = topologyDataLoader.nextData();
 				log.info("loadDataTime = " + watch);
 				watch.reset();
 				watch.start();
-//				influxDBUtil.saveData(spoutADNBoltData);
-//				influxDBUtil.saveData(supervisorData);
-//				influxDBUtil.saveData(clusterData);
-//				influxDBUtil.saveData(topologyData);
+				influxDBUtil.saveData(spoutADNBoltData);
+				influxDBUtil.saveData(supervisorData);
+				influxDBUtil.saveData(clusterData);
+				influxDBUtil.saveData(topologyData);
 				log.info("insertDataTime = " + watch);
 				try {
 					Thread.sleep(variables.DataProcessorSleepTime);

@@ -15,8 +15,8 @@ public class DataLoadListener implements ServletContextListener {
 	private Thread thread; 
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		log.info("初始化DataLoadListener...");
-		ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContextEvent.getServletContext());
 		try {
+			ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContextEvent.getServletContext());
 			Runnable dataProcessor = applicationContext.getBean(DataProcessor.class);
 			thread = new Thread(dataProcessor);
 			thread.setName("data-processor");
@@ -32,7 +32,11 @@ public class DataLoadListener implements ServletContextListener {
 	@SuppressWarnings("deprecation")
 	public void contextDestroyed(ServletContextEvent arg0) {
 		log.info("DataLoader销毁！");
-		thread.stop();
+		try{
+			thread.stop();
+		}catch(Exception e){
+			log.catching(e);
+		}
 	}
 
 }
