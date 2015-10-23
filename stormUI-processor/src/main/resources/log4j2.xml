@@ -10,12 +10,19 @@
 		
 		<!-- 这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
 		<RollingFile name="RollingFile" fileName="logs/RollingFile.log"
-			filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+			filePattern="logs/StormWatcher/StormWatcher-%d{yyyy-MM-dd}-%i.log.gz">
 			<PatternLayout
 				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %class{1} %M - %msg%xEx%n" />
-			<SizeBasedTriggeringPolicy size="50MB" />
+			<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			<SizeBasedTriggeringPolicy size="20KB" />
 		</RollingFile>
-
+		<!-- <RollingFile name="RollingFile" fileName="logs/RollingFile.log"
+			filePattern="logs/$${date:yyyy-MM}/StormWatcher-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %class{1} %M - %msg%xEx%n" />
+			<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			<SizeBasedTriggeringPolicy size="20KB" />
+		</RollingFile> -->
 	</appenders>
 	<loggers>
 		<!-- 我们只让这个logger输出trace信息，其他的都是error级别 additivity开启的话，由于这个logger也是满足root的，所以会被打印两遍。 
