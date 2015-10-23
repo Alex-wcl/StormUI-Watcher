@@ -68,6 +68,7 @@ public class DataLoaderStorm<T> implements DataLoader<T>{
 			log.catching(e);
 		}
 		urlString = "http://" + SERVER_IP + ":" + SERVER_PORT + "/api/v1/" + item;
+		log.info("requestUrl:" + urlString);
 		data = URLConnectionHelper.URLConnection(urlString);
 		String stringDatas = null;
 		
@@ -89,7 +90,6 @@ public class DataLoaderStorm<T> implements DataLoader<T>{
 			}
 			datas  = (T)jsonObject.toBean(jsonObject, datas.getClass());
 			elems.add(datas);
-			log.info(datas.getClass().getName() + i);
 		}
 		return elems;
 	}

@@ -42,7 +42,6 @@ public class ModuleDataLoader extends Thread {
 			log.catching(e);
 		}
 		dataLoaderStorm.getElems().add(spoutAndBolt);
-		log.info("spoutANDbolt of " + "topology : " + topologyId);
 		latch.countDown();
 	}
 	
@@ -50,7 +49,7 @@ public class ModuleDataLoader extends Thread {
 	// 获取spout和bolts信息，map中有两条记录，key为spoutDatas和blotDatas，value都是list
 			public SpoutADNBolt loadTopologyInfo(String clusterIP, String port, String topologyId) {
 				String urlString = "http://" + clusterIP + ":" + port + "/api/v1/topology/" + topologyId;
-				log.info(topologyId + "," + urlString);
+				log.info("spoutANDbolt of " + "," + urlString);
 				String result = URLConnectionHelper.URLConnection(urlString);
 				// 解析spout数据
 				// substringOfSpouts:Spout部分的数据。查找[]中间的部分

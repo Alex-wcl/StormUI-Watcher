@@ -8,7 +8,7 @@ public class GlobalVariable {
 	/**
 	 * influxdb服务器的ip地址
 	 */
-	private static String INFLUXDB_SERVER_IP = "10.77.108.126";
+	private static String INFLUXDB_SERVER_IP = "10.75.0.24";
 	/**
 	 * influxdb提供的端口号，默认为8086
 	 */
