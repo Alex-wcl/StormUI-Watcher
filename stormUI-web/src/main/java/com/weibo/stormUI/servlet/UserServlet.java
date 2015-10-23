@@ -50,7 +50,7 @@ public class UserServlet extends HttpServlet {
 			//通过验证
 			session.setAttribute("username", userName);
 			session.setAttribute("password", password);
-			request.getRequestDispatcher("/variables.jsp").forward(request, response);
+			response.sendRedirect(request.getServletContext().getContextPath() + "/VariableServlet");
 		}else{
 			request.setAttribute("msg", "username_error");
 			request.getRequestDispatcher("/index.jsp").forward(request, response);

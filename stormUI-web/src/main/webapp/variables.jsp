@@ -33,14 +33,14 @@
 	if(username != null && password != null){%>
 	<h1>查看/修改系统变量</h1>
 	<form class="form-4" action="VariableServlet" method="post">
-		<h3>DataProcessorSleepTime(毫秒)</h3><input type="text" id="DataProcessorSleepTime" name="DataProcessorSleepTime" value=<%=variables.DataProcessorSleepTime %> /><br>
-		<h3>DataSourceServerIP</h3><input type="text" id="DataSourceServerIP" name="DataSourceServerIP" value=<%=variables.DataSourceServerIP %> /><br>
-		<h3>DataSourceServerPort</h3><input type="text" name="DataSourceServerPort" value=<%=variables.DataSourceServerPort %> /><br>
-		<h3>DataBaseServerIP</h3><input type="text" name="DataBaseServerIP" value=<%=variables.DataBaseServerIP %> /><br>
-		<h3>DataBaseServerPort</h3><input type="text" name="DataBaseServerPort" value=<%=variables.DataBaseServerPort %> /><br>
-		<h3>DataBaseUserName</h3><input type="text" name="DataBaseUserName" value=<%=variables.DataBaseUserName %> /><br>
-		<h3>DataBasePassword</h3><input type="text" name="DataBasePassword" value=<%=variables.DataBasePassword %> /><br>
-		<h3>DataBaseName</h3><input type="text" name="DataBaseName" value=<%=variables.DataBaseName %> /><br>
+		<h3>DataProcessorSleepTime(毫秒)</h3><input type="text" id="DataProcessorSleepTime" name="DataProcessorSleepTime" value=<%=variables.getDataProcessorSleepTime() %> /><br>
+		<h3>DataSourceServerIP</h3><input type="text" id="DataSourceServerIP" name="DataSourceServerIP" value=<%=variables.getDataSourceServerIP() %> /><br>
+		<h3>DataSourceServerPort</h3><input type="text" name="DataSourceServerPort" value=<%=variables.getDataSourceServerPort() %> /><br>
+		<h3>DataBaseServerIP</h3><input type="text" name="DataBaseServerIP" value=<%=variables.getDataBaseServerIP() %> /><br>
+		<h3>DataBaseServerPort</h3><input type="text" name="DataBaseServerPort" value=<%=variables.getDataBaseServerPort() %> /><br>
+		<h3>DataBaseUserName</h3><input type="text" name="DataBaseUserName" value=<%=variables.getDataBaseUserName() %> /><br>
+		<h3>DataBasePassword</h3><input type="text" name="DataBasePassword" value=<%=variables.getDataBasePassword() %> /><br>
+		<h3>DataBaseName</h3><input type="text" name="DataBaseName" value=<%=variables.getDataBaseName() %> /><br>
 		<input type="submit" value="提交">
 	</form>
 	<%}else{
