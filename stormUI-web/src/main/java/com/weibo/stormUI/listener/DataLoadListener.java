@@ -20,7 +20,7 @@ public class DataLoadListener implements ServletContextListener {
 			Runnable dataProcessor = applicationContext.getBean(DataProcessor.class);
 			thread = new Thread(dataProcessor);
 			thread.setName("data-processor");
-			thread.start();
+			//thread.start();
 			log.info("DataLoader线程启动成功！");
 		} catch (Exception e) {
 			System.out.println("DataLoader线程启动失败！");

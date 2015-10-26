@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+	
+	<!-- 是否需要报警：true（false） -->
+	<isAvailable value="true"/>
+	
+	<!-- worker改变之后需要报警的次数 -->
+	<worker_alarm_times value="1"/>
+	
+	<!-- worker改变之后报警时间间隔（秒） -->
+	<worker_alarm_interval value="60"/>
+	
+	<!-- 如果topology以死，则报警次数 -->
+	<topology_alarm_times value="5"/>
+	
+	<!-- topology已死，报警时间间隔.单位：秒 -->
+	<topology_alarm_interval value="60"/>
+	
+	<!-- topology的worker阈值，值改变则报警，如果topology已死，则删除该topology节点。 -->
+	<topologies>
+		<topology topologyId="groupchat-storm-offline" worker="2" />
+		<topology topologyId="groupchat-storm-online" worker="3" />
+		<topology topologyId="msgs-router" worker="3" />
+		<topology topologyId="nc-push-storm" worker="4" />
+		<topology topologyId="webim_storm" worker="3" />
+		<topology topologyId="weibo-camera-message-processor-online" worker="5" />
+	</topologies>
+</properties>
