@@ -24,6 +24,10 @@
 	<%if(status != null && status.equals("ok")){%>
 		alert("修改成功！");
 	<%}%>
+	
+	function submitme(){
+		document.AlarmServlet.submit();
+	}
 </script>
 </head>
 <body>
@@ -31,23 +35,60 @@
 	String username = (String)request.getSession().getAttribute("username");
 	String password = (String)request.getSession().getAttribute("password");
 	if(username != null && password != null){%>
-	<h1>查看/修改系统变量</h1>
+	
 	<form class="form-4" action="VariableServlet" method="post">
-		<h3>DataProcessorSleepTime(毫秒)</h3><input type="text" id="DataProcessorSleepTime" name="DataProcessorSleepTime" value=<%=variables.getDataProcessorSleepTime() %> /><br>
-		<h3>DataSourceServerIP</h3><input type="text" id="DataSourceServerIP" name="DataSourceServerIP" value=<%=variables.getDataSourceServerIP() %> /><br>
-		<h3>DataSourceServerPort</h3><input type="text" name="DataSourceServerPort" value=<%=variables.getDataSourceServerPort() %> /><br>
-		<h3>DataBaseServerIP</h3><input type="text" name="DataBaseServerIP" value=<%=variables.getDataBaseServerIP() %> /><br>
-		<h3>DataBaseServerPort</h3><input type="text" name="DataBaseServerPort" value=<%=variables.getDataBaseServerPort() %> /><br>
-		<h3>DataBaseUserName</h3><input type="text" name="DataBaseUserName" value=<%=variables.getDataBaseUserName() %> /><br>
-		<h3>DataBasePassword</h3><input type="text" name="DataBasePassword" value=<%=variables.getDataBasePassword() %> /><br>
-		<h3>DataBaseName</h3><input type="text" name="DataBaseName" value=<%=variables.getDataBaseName() %> /><br>
-		<input type="submit" value="提交">
+		<table style="width: 500px;float: left;">
+		<caption align="top" style="margin-bottom: 15px;"><h1>查看/修改系统变量</h1></caption>
+			<tr>
+				<td><h3>DataProcessorSleepTime(毫秒)</h3></td>
+				<td><input type="text" id="DataSourceServerIP" name="DataSourceServerIP" value=<%=variables.getDataSourceServerIP() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataSourceServerIP</h3></td>
+				<td><input type="text" id="DataProcessorSleepTime" name="DataProcessorSleepTime" value=<%=variables.getDataProcessorSleepTime() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataSourceServerPort</h3></td>
+				<td><input type="text" name="DataSourceServerPort" value=<%=variables.getDataSourceServerPort() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataBaseServerIP</h3></td>
+				<td><input type="text" name="DataBaseServerIP" value=<%=variables.getDataBaseServerIP() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataBaseServerPort</h3></td>
+				<td><input type="text" name="DataBaseServerPort" value=<%=variables.getDataBaseServerPort() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataBaseUserName</h3></td>
+				<td><input type="text" name="DataBaseUserName" value=<%=variables.getDataBaseUserName() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataBasePassword</h3></td>
+				<td><input type="text" name="DataBasePassword" value=<%=variables.getDataBasePassword() %> /></td>
+			</tr>
+			
+			<tr>
+				<td><h3>DataBaseName</h3></td>
+				<td><input type="text" name="DataBaseName" value=<%=variables.getDataBaseName() %> /></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="提交" style="width: 300px;" ></td>
+				<td><input type="button" value="查看报警参数" onclick="javascript:submitme();" style="width: 300px;" ></td>
+			</tr>
+		</table>
+		
 	</form>
 	<%}else{
 		request.getRequestDispatcher("/index.jsp").forward(request, response);
 	%>
 	<%} %>
-	
-	
+	<form name="AlarmServlet" action="AlarmServlet" method="get"></form>
 </body>
 </html>

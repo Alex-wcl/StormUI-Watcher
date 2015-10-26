@@ -15,11 +15,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>show alarm properties</title>
-<style type="text/css">
-	.text{
-		width: 50px;
-	}	
-</style>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script src="js/modernizr.custom.63321.js"></script>
+		<style>	
+			body {
+				background: #7f9b4e url(images/bg2.jpg) no-repeat center top;
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				background-size: cover;
+			}
+		</style>
 <script type="text/javascript">
 	<%if(status != null && status.equals("ok")){%>
 		alert("修改成功！");
@@ -27,31 +32,36 @@
 </script>
 </head>
 <body>
-	<form action="AlarmServlet" method="post">
+	<%
+	String username = (String)request.getSession().getAttribute("username");
+	String password = (String)request.getSession().getAttribute("password");
+	if(username != null && password != null){%>
+	<form class="form-4" action="AlarmServlet" method="post">
 		<table>
+			<caption align="top" style="margin-bottom: 15px;"><h1>报警参数</h1></caption>
 			<tr>
-				<td>是否报警(true/false)</td>
+				<td><h3>是否报警(true/false)</h3></td>
 				<td><input type="text" name="isAvailable" value=<%=alarmProperties.isAvailable() %> class="text"/></td>
 			</tr>
 			<tr>
-				<td>worker改变之后报警次数(次)</td>
+				<td><h3>worker改变之后报警次数(次)</h3></td>
 				<td><input type="text" name="worker_alarm_times" value=<%=alarmProperties.getWorker_alarm_times() %> class="text" /></td>
 			</tr>
 			<tr>
-				<td>worker改变之后报警时间间隔（秒）</td>
+				<td><h3>worker改变之后报警时间间隔（秒）</h3></td>
 				<td><input type="text" name="worker_alarm_interval" value=<%=alarmProperties.getWorker_alarm_interval() %> class="text" /></td>
 			</tr>
 			
 			<tr>
-				<td>topology已死，报警次数（次）</td>
+				<td><h3>topology已死，报警次数（次）</h3></td>
 				<td><input type="text" name="topology_alarm_times" value=<%=alarmProperties.getTopology_alarm_times()%> class="text" /></td>
 			</tr>
 			<tr>
-				<td>topology已死，报警时间间隔（秒）</td>
+				<td><h3>topology已死，报警时间间隔（秒）</h3></td>
 				<td><input type="text" name="topology_alarm_interval" value=<%=alarmProperties.getTopology_alarm_interval()%> class="text"/></td>
 			</tr>
 			<tr>
-				<td>topology_worker阈值</td>
+				<td><h3>topology_worker阈值</h3></td>
 			</tr>
 			
 			<%if(topology != null){ 
@@ -62,13 +72,20 @@
 		      String value = (String)entry.getValue();
 			%>
 			<tr>
-				<td><input type="text" readonly="readonly" id="topologyid" name="topologyid" value=<%=key%> style="width: 250px;"/> :</td>
+				<td><input type="text" readonly="readonly" id="topologyid" name="topologyid" value=<%=key%> style="width: 320px;"/> </td>
 				<td><input type="text" id="worker" name="worker" value=<%=value%> class="text"/></td>
 			</tr>
 			<%} }%>
-			
+			<tr>
+				<td><input type="button" value="返回" onclick="javascript:history.go(-1);" style="width: 300px;"/></td>
+                <td><input type="submit" value="提交" style="width: 300px;"/></td>
+            </tr>
 		</table>
-		<input type="submit" value="提交"/>
+		
 	</form>
+	<%}else{
+		request.getRequestDispatcher("/index.jsp").forward(request, response);
+	%>
+	<%} %>
 </body>
 </html>

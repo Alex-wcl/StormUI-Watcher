@@ -37,14 +37,12 @@
         <div class="container">
 			<div  style="margin-top:15%;">
 				<section class="main">
-					<form class="form-4" action="UserServlet" method="post">
+					<form class="form-3" action="UserServlet" method="post">
 					    <h1>请登录</h1>
 					    <p>
-					        <label for="login">Username or email</label>
 					        <input type="text" name="username" placeholder="Username or email" required>
 					    </p>
 					    <p>
-					        <label for="password">Password</label>
 					        <input type="password" name='password' placeholder="Password" required> 
 					    </p>
 	
