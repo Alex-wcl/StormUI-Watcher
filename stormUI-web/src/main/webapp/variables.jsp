@@ -41,12 +41,12 @@
 		<caption align="top" style="margin-bottom: 15px;"><h1>查看/修改系统变量</h1></caption>
 			<tr>
 				<td><h3>DataProcessorSleepTime(毫秒)</h3></td>
-				<td><input type="text" id="DataSourceServerIP" name="DataSourceServerIP" value=<%=variables.getDataSourceServerIP() %> /></td>
+				<td><input type="text" id="DataProcessorSleepTime" name="DataProcessorSleepTime" value=<%=variables.getDataProcessorSleepTime() %> /></td>
 			</tr>
 			
 			<tr>
 				<td><h3>DataSourceServerIP</h3></td>
-				<td><input type="text" id="DataProcessorSleepTime" name="DataProcessorSleepTime" value=<%=variables.getDataProcessorSleepTime() %> /></td>
+				<td><input type="text" id="DataSourceServerIP" name="DataSourceServerIP" value=<%=variables.getDataSourceServerIP() %> /></td>
 			</tr>
 			
 			<tr>

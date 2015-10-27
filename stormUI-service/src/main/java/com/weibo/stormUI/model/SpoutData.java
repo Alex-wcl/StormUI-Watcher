@@ -1,14 +1,14 @@
 package com.weibo.stormUI.model;
 
 public class SpoutData {
-	private String executors;
-	private String emitted;
-	private String completeLatency;
-	private String transferred;
-	private String acked;
+	private double executors;
+	private int emitted;
+	private double completeLatency;
+	private int transferred;
+	private int acked;
 	private String errorPort;
 	private String spoutId;
-	private String tasks;
+	private double tasks;
 	private String topologyId;
 	private String errorLapsedSecs;
 	
@@ -42,96 +42,107 @@ public class SpoutData {
 				+ ",topologyId = " + topologyId;
 	}
 
+
+    public double getExecutors() {
+        return executors;
+    }
+
+
+    public void setExecutors(double executors) {
+        this.executors = executors;
+    }
+
+
+    public int getEmitted() {
+        return emitted;
+    }
+
+
+    public void setEmitted(int emitted) {
+        this.emitted = emitted;
+    }
+
+
+    public double getCompleteLatency() {
+        return completeLatency;
+    }
+
+
+    public void setCompleteLatency(double completeLatency) {
+        this.completeLatency = completeLatency;
+    }
+
+
+    public int getTransferred() {
+        return transferred;
+    }
+
+
+    public void setTransferred(int transferred) {
+        this.transferred = transferred;
+    }
+
+
+    public int getAcked() {
+        return acked;
+    }
+
+
+    public void setAcked(int acked) {
+        this.acked = acked;
+    }
+
+
+    public String getErrorPort() {
+        return errorPort;
+    }
+
+
+    public void setErrorPort(String errorPort) {
+        this.errorPort = errorPort;
+    }
+
+
+    public String getSpoutId() {
+        return spoutId;
+    }
+
+
+    public void setSpoutId(String spoutId) {
+        this.spoutId = spoutId;
+    }
+
+
+    public double getTasks() {
+        return tasks;
+    }
+
+
+    public void setTasks(double tasks) {
+        this.tasks = tasks;
+    }
+
+
+    public String getTopologyId() {
+        return topologyId;
+    }
+
+
+    public void setTopologyId(String topologyId) {
+        this.topologyId = topologyId;
+    }
+
+
+    public String getErrorLapsedSecs() {
+        return errorLapsedSecs;
+    }
+
+
+    public void setErrorLapsedSecs(String errorLapsedSecs) {
+        this.errorLapsedSecs = errorLapsedSecs;
+    }
+
 	
 	
-	public String getErrorLapsedSecs() {
-		return errorLapsedSecs;
-	}
-
-
-
-	public void setErrorLapsedSecs(String errorLapsedSecs) {
-		this.errorLapsedSecs = errorLapsedSecs;
-	}
-
-
-
-	public String getTopologyId() {
-		return topologyId;
-	}
-
-
-
-	public void setTopologyId(String topologyId) {
-		this.topologyId = topologyId;
-	}
-
-
-
-	public String getExecutors() {
-		return executors;
-	}
-
-	public void setExecutors(String executors) {
-		this.executors = executors;
-	}
-
-	public String getEmitted() {
-		return emitted;
-	}
-
-	public void setEmitted(String emitted) {
-		this.emitted = emitted;
-	}
-
 	
-
-	public String getCompleteLatency() {
-		return completeLatency;
-	}
-
-	public void setCompleteLatency(String completeLatency) {
-		this.completeLatency = completeLatency;
-	}
-
-	public String getTransferred() {
-		return transferred;
-	}
-
-	public void setTransferred(String transferred) {
-		this.transferred = transferred;
-	}
-
-	public String getAcked() {
-		return acked;
-	}
-
-	public void setAcked(String acked) {
-		this.acked = acked;
-	}
-
-	public String getErrorPort() {
-		return errorPort;
-	}
-
-	public void setErrorPort(String errorPort) {
-		this.errorPort = errorPort;
-	}
-
-	public String getSpoutId() {
-		return spoutId;
-	}
-
-	public void setSpoutId(String spoutId) {
-		this.spoutId = spoutId;
-	}
-
-	public String getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(String tasks) {
-		this.tasks = tasks;
-	}
-
 }

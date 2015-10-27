@@ -64,14 +64,14 @@ public class ModuleDataLoader extends Thread {
 							StringHelper.getSubtringIndex(substringOfSpouts, "}", i + 1) + 1);
 					JSONObject jsonObject = JSONObject.fromObject(tmp);
 					SpoutData spoutData = new SpoutData();
-					spoutData.setExecutors(jsonObject.getString("executors"));
-					spoutData.setEmitted(jsonObject.getString("emitted"));
-					spoutData.setCompleteLatency(jsonObject.getString("completeLatency"));
-					spoutData.setTransferred(jsonObject.getString("transferred"));
-					spoutData.setAcked(jsonObject.getString("acked"));
+					spoutData.setExecutors(Double.valueOf(jsonObject.getString("executors")));
+					spoutData.setEmitted(Integer.valueOf(jsonObject.getString("emitted")));
+					spoutData.setCompleteLatency(Double.valueOf(jsonObject.getString("completeLatency")));
+					spoutData.setTransferred(Integer.valueOf(jsonObject.getString("transferred")));
+					spoutData.setAcked(Integer.valueOf(jsonObject.getString("acked")));
 					spoutData.setErrorPort(jsonObject.getString("errorPort"));
 					spoutData.setSpoutId(jsonObject.getString("spoutId"));
-					spoutData.setTasks(jsonObject.getString("tasks"));
+					spoutData.setTasks(Double.valueOf(jsonObject.getString("tasks")));
 					spoutData.setTopologyId(topologyId);
 					spoutDatas.add(spoutData);
 				}
@@ -89,17 +89,17 @@ public class ModuleDataLoader extends Thread {
 							StringHelper.getSubtringIndex(substringOfBlots, "}", i + 1) + 1);
 					JSONObject jsonObject = JSONObject.fromObject(tmp);
 					BoltData blotData = new BoltData();
-					blotData.setExecutors(jsonObject.getString("executors"));
-					blotData.setEmitted(jsonObject.getString("emitted"));
+					blotData.setExecutors(Integer.valueOf(jsonObject.getString("executors")));
+					blotData.setEmitted(Integer.valueOf(jsonObject.getString("emitted")));
 					blotData.setBoltId(jsonObject.getString("encodedBoltId"));
-					blotData.setTasks(jsonObject.getString("tasks"));
-					blotData.setTransferred(jsonObject.getString("transferred"));
-					blotData.setCapacity(jsonObject.getString("capacity"));
-					blotData.setExecuteLatency(jsonObject.getString("executeLatency"));
-					blotData.setExecuted(jsonObject.getString("executed"));
-					blotData.setProcessLatency(jsonObject.getString("processLatency"));
-					blotData.setAcked(jsonObject.getString("acked"));
-					blotData.setFailed(jsonObject.getString("failed"));
+					blotData.setTasks(Integer.valueOf(jsonObject.getString("tasks")));
+					blotData.setTransferred(Integer.valueOf(jsonObject.getString("transferred")));
+					blotData.setCapacity(Double.valueOf(jsonObject.getString("capacity")));
+					blotData.setExecuteLatency(Double.valueOf(jsonObject.getString("executeLatency")));
+					blotData.setExecuted(Integer.valueOf(jsonObject.getString("executed")));
+					blotData.setProcessLatency(Double.valueOf(jsonObject.getString("processLatency")));
+					blotData.setAcked(Integer.valueOf(jsonObject.getString("acked")));
+					blotData.setFailed(Integer.valueOf(jsonObject.getString("failed")));
 					blotData.setTopologyId(topologyId);
 					blotDatas.add(blotData);
 				}

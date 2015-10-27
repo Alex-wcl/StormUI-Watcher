@@ -9,8 +9,9 @@ public class Variables {
 	//数据源
 	private String DataSourceServerIP = "10.77.128.101";
 	private String DataSourceServerPort = "8080";
-	//数据库
-	private String DataBaseServerIP = "10.75.0.24";
+	//数据库http://10.77.108.126:8083/
+//	private String DataBaseServerIP = "10.75.0.24";
+	private String DataBaseServerIP = "10.77.108.126";
 	private String DataBaseServerPort = "8086";
 	private String DataBaseUserName = "root";
 	private String DataBasePassword = "root";

@@ -2,16 +2,16 @@ package com.weibo.stormUI.model;
 
 public class BoltData {
 	private String boltId;
-	private String executors;
-	private String tasks;
-	private String emitted;
-	private String transferred;
-	private String capacity;
-	private String executeLatency;
-	private String executed;
-	private String processLatency;
-	private String acked;
-	private String failed;
+	private int executors;
+	private int tasks;
+	private int emitted;
+	private int transferred;
+	private double capacity;
+	private double executeLatency;
+	private int executed;
+	private double processLatency;
+	private int acked;
+	private int failed;
 	private String topologyId;
 	private String errorLapsedSecs;
 	
@@ -27,113 +27,117 @@ public class BoltData {
 				+ ",topologyId = " + topologyId;
 	}
 
+    public String getBoltId() {
+        return boltId;
+    }
 
-	public String getErrorLapsedSecs() {
-		return errorLapsedSecs;
-	}
+    public void setBoltId(String boltId) {
+        this.boltId = boltId;
+    }
 
-	public void setErrorLapsedSecs(String errorLapsedSecs) {
-		this.errorLapsedSecs = errorLapsedSecs;
-	}
+    public int getExecutors() {
+        return executors;
+    }
+
+    public void setExecutors(int executors) {
+        this.executors = executors;
+    }
+
+    public int getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(int tasks) {
+        this.tasks = tasks;
+    }
+
+    public int getEmitted() {
+        return emitted;
+    }
+
+    public void setEmitted(int emitted) {
+        this.emitted = emitted;
+    }
+
+    public int getTransferred() {
+        return transferred;
+    }
+
+    public void setTransferred(int transferred) {
+        this.transferred = transferred;
+    }
+
+    public double getCapacity() {
+        return capacity;
+    }
+
+  
+
+    public double getExecuteLatency() {
+        return executeLatency;
+    }
+
+    public void setExecuteLatency(double executeLatency) {
+        this.executeLatency = executeLatency;
+    }
+
+    public void setCapacity(double capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setExecuteLatency(int executeLatency) {
+        this.executeLatency = executeLatency;
+    }
+
+    public int getExecuted() {
+        return executed;
+    }
+
+    public void setExecuted(int executed) {
+        this.executed = executed;
+    }
+
+    public double getProcessLatency() {
+        return processLatency;
+    }
+
+    public void setProcessLatency(double processLatency) {
+        this.processLatency = processLatency;
+    }
+
+    public int getAcked() {
+        return acked;
+    }
+
+    public void setAcked(int acked) {
+        this.acked = acked;
+    }
+
+    public int getFailed() {
+        return failed;
+    }
+
+    public void setFailed(int failed) {
+        this.failed = failed;
+    }
+
+    public String getTopologyId() {
+        return topologyId;
+    }
+
+    public void setTopologyId(String topologyId) {
+        this.topologyId = topologyId;
+    }
+
+    public String getErrorLapsedSecs() {
+        return errorLapsedSecs;
+    }
+
+    public void setErrorLapsedSecs(String errorLapsedSecs) {
+        this.errorLapsedSecs = errorLapsedSecs;
+    }
 
 
-	public String getBoltId() {
-		return boltId;
-	}
-
-	public void setBoltId(String boltId) {
-		this.boltId = boltId;
-	}
-
-	public String getExecutors() {
-		return executors;
-	}
-
-	public void setExecutors(String executors) {
-		this.executors = executors;
-	}
-
-	public String getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(String tasks) {
-		this.tasks = tasks;
-	}
-
-	public String getEmitted() {
-		return emitted;
-	}
-
-	public void setEmitted(String emitted) {
-		this.emitted = emitted;
-	}
-
-	public String getTransferred() {
-		return transferred;
-	}
-
-	public void setTransferred(String transferred) {
-		this.transferred = transferred;
-	}
-
-	public String getCapacity() {
-		return capacity;
-	}
-
-	public void setCapacity(String capacity) {
-		this.capacity = capacity;
-	}
-
-	public String getExecuteLatency() {
-		return executeLatency;
-	}
-
-	public void setExecuteLatency(String executeLatency) {
-		this.executeLatency = executeLatency;
-	}
-
-	public String getExecuted() {
-		return executed;
-	}
-
-	public void setExecuted(String executed) {
-		this.executed = executed;
-	}
-
-	public String getProcessLatency() {
-		return processLatency;
-	}
-
-	public void setProcessLatency(String processLatency) {
-		this.processLatency = processLatency;
-	}
-
-	public String getAcked() {
-		return acked;
-	}
-
-	public void setAcked(String acked) {
-		this.acked = acked;
-	}
-
-	public String getFailed() {
-		return failed;
-	}
-
-	public void setFailed(String failed) {
-		this.failed = failed;
-	}
-
-
-	public String getTopologyId() {
-		return topologyId;
-	}
-
-	public void setTopologyId(String topologyId) {
-		this.topologyId = topologyId;
-	}
-	
 
 	
 }

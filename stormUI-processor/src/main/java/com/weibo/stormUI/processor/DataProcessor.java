@@ -1,5 +1,6 @@
 package com.weibo.stormUI.processor;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -18,6 +19,7 @@ import com.weibo.stormUI.model.SpoutADNBolt;
 import com.weibo.stormUI.model.SupervisorData;
 import com.weibo.stormUI.model.TopologyData;
 import com.weibo.stormUI.po.Variables;
+import com.weibo.stormUI.util.XmlHelper;
 
 @Component
 public class DataProcessor implements Runnable {
@@ -110,5 +112,12 @@ public class DataProcessor implements Runnable {
         } catch (Throwable t) {
             log.catching(t);
         }
+    }
+    
+    
+    public static void main(String[] args) {
+        Runnable run = new DataProcessor();
+        Thread thread = new Thread(run);
+        thread.start();
     }
 }
