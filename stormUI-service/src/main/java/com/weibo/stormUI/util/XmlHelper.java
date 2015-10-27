@@ -40,6 +40,7 @@ public class XmlHelper {
         }
         return users;
     }
+    
 
     /**
      * 读alarmProperties.xml
@@ -72,7 +73,18 @@ public class XmlHelper {
      * @param key 被删除的topology的id
      * @return
      */
-    public static boolean deleteAlarmProperties(String key) {
+    public static boolean deleteAlarmProperties(URL AlarmPropertiesXMLUrl,String key) {
+        Document document = null;
+        try {
+            document = reader.read(AlarmPropertiesXMLUrl);
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Element root = document.getRootElement();
+        Element topologies = root.element("topologies");
+        Element topo = topologies.element(key);
+        topologies.remove(topo);
         return true;
     }
 
@@ -96,6 +108,7 @@ public class XmlHelper {
      * @return
      */
     public static boolean updateAndSaveAlarmProperties(String type, String name, String value) {
+        
         return true;
     }
 
