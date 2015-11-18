@@ -57,7 +57,9 @@ public class DataProcessor implements Runnable {
                     runTask();
                 }
             };
+            
             timer.schedule(task, 0, variables.getDataProcessorSleepTime());
+            
         } catch (Throwable e) {
             log.catching(e);
         }

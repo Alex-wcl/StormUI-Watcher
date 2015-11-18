@@ -5,6 +5,7 @@ target
 .settings/
 .myeclipse*
 .mymetadata*
+.git/
 *.class
 WebRoot/WEB-INF/classes/*
 *.swp
